@@ -1,0 +1,324 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat|Montserrat+Alternates|Poppins&display=swap');
+
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat Alternates', sans-serif;
+}
+
+body{
+    background: url(https://www.view-enterprise.com/iraq/wp-content/uploads/2022/07/slider-smart-home-3.png);
+    background-size: 100vw 100vh;
+    background-repeat: no-repeat;
+    background-color: rgb(5, 5, 5);
+}
+
+.capa{
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    background: rgba(3, 3, 3, 0);
+    z-index: -1;
+    top: 0;left: 0;
+}
+
+.header{
+    width: 100%;
+    height: 70px;
+    position: fixed;
+    top: 0;left: 0;
+}
+
+.container{
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+}
+
+/*Menu de lineas*/
+
+.container .btn-menu, .logo{
+    float: left;
+    line-height: 70px;
+}
+.container .btn-menu label{
+    color: rgb(234, 228, 228);
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/*Titulo home automation corp izquierda*/
+
+.logo h1{
+    color: #fff;
+    font-weight: 400;
+    font-size: 22px;
+    margin-left: 10px;
+}
+
+.container .menu{
+    float: right;
+    line-height: 70px;
+}
+
+.container .menu a{
+    display: inline-block;
+    padding: 15px 10px;
+    line-height: normal;
+    text-decoration: none;
+    color: #fff;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid transparent;
+    font-size: 15px;
+}
+
+.container .menu a:hover{
+    border-bottom: 2px solid #c7c7c7;
+    padding: 5px 10px;
+}
+
+#btn-menu{
+    display: none;
+}
+
+/*Controlar la sombra al momento de desplegar el menu de la izquierda*/
+.container-menu{
+    position: absolute;
+    background: rgba(64, 59, 88, 0.5);
+    width: 100%;
+    height: 100vh;
+    top: 0;left: 0;
+    transition: all 500ms ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+#btn-menu:checked ~ .container-menu{
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Menu de la izquierda mandos*/
+
+.cont-menu{
+    width: 100%;
+    max-width: 250px;
+    background: #353434;
+    height: 100vh;
+    position: relative;
+    transition: all 500ms ease;
+    transform: translateX(-100%);
+}
+
+/*Posiionar el menu izquierdo a la linea de la izquierda*/
+
+#btn-menu:checked ~ .container-menu .cont-menu{
+    transform: translateX(0%);
+}
+
+/*se refiere al espacio de arriba del menu de la izquierda*/
+
+.cont-menu nav{
+    transform: translateY(15%);
+}
+
+/*se refiere al menu izquierdo para la separacion de titulos*/
+
+.cont-menu nav a{
+    display: block;
+    text-decoration: none;
+    padding: 20px;
+    color: #c7c7c7;
+    border-left: 5px solid transparent;
+    transition: all 400ms ease;
+}
+
+.cont-menu nav a:hover{
+    border-left: 5px solid #777777;
+    background: #1f1f1f;
+}
+
+.cont-menu label{
+    position: absolute;
+    right: 5px;
+    top: 10px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+/*Referente al cuerpo de la pagina*/
+
+.contenido-principal{
+  margin-top: 725px;
+  margin-bottom: 50px;
+  height: 40vh;
+  background-color: #393737;
+  padding: 50px 20px;
+  text-align: center;
+  color: #fff;
+  font-size: 20px;
+}
+
+.main{
+  margin-top: auto;
+  margin-bottom: -150px;
+  height: 100vh;
+  background:url(https://static.wixstatic.com/media/1492c0_648f4e10fc6c4eabbac8257e6bfda224~mv2.gif);
+  background-size: 100vw 100vh;
+  background-repeat: no-repeat;
+  padding: 40px 100px;
+  text-align: left;
+  color: #fcf9f9;
+}
+
+.main h3{
+  text-align: center;
+  font-size: 40px;
+}
+
+.main h4{
+  text-align: left;
+  font-size: 25px;
+}
+
+.tercero {
+  margin-top: 200px;
+  margin-bottom: 200px;
+  height: 100vh;
+  background:url(https://i2.wp.com/eloka.net/wp-content/uploads/2019/08/Lighting-Automation.gif?fit=1024%2C1024&ssl=1);
+  background-size: 100vw 100vh;
+  background-repeat: no-repeat;
+  padding: 40px 100px;
+  text-align: left;
+  color: #fff;
+}
+
+.tercero h2{
+  text-align: left;
+  font-size: 40px;
+}
+
+.cuarto {
+  margin-top: -150px;
+  margin-bottom: -150px;
+  height: 100vh;
+  background:url(https://i0.wp.com/www.bovic.co.ke/wp-content/uploads/2019/11/Bovic-Best-Selling-Small-Mini-Smart-Home.gif?fit=1000%2C1000&ssl=1);
+  background-size: 100vw 100vh;
+  background-repeat: no-repeat;
+  padding: 40px 100px;
+  text-align: left;
+  color: #fff;
+}
+
+.cuarto h2{
+  text-align: left;
+  font-size: 40px;
+}
+
+.quinto {
+  margin-top: 200px;
+  margin-bottom: 100px;
+  height: 100vh;
+  background:url(https://electronics360.globalspec.com/images/assets/358/12358/63d7a23082fc29a6c33e139b61ede074_original.gif);
+  background-size: 100vw 100vh;
+  background-repeat: no-repeat;
+  padding: 40px 100px;
+  text-align: left;
+  color: #fff;
+}
+
+.quinto h2{
+  text-align: left;
+  font-size: 40px;
+}
+
+.sexto {
+  margin-top: -50px;
+  margin-bottom: -50px;
+  height: 100vh;
+  background:url(https://www.1control.eu/blog/wp-content/uploads/2022/03/video-cancello-porta-EN.gif);
+  background-size: 100vw 100vh;
+  background-repeat: no-repeat;
+  padding: 40px 100px;
+  text-align: left;
+  color: #fff;
+}
+
+.sexto h2{
+  text-align: left;
+  font-size: 40px;
+}
+
+.pie-pagina{
+  width: 100%;
+  background-color: #050505;
+}
+
+.pie-pagina .grupo-1{
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 50;
+  padding: 45px 0px;
+}
+
+.pie-pagina .grupo-1 .box figure{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pie-pagina .grupo-1 .box figure img{
+  width: 250px;
+}
+
+.pie-pagina .grupo-1 .box h2{
+  color: #fff;
+  margin-bottom: 25px;
+  font-size: 20px;
+}
+
+.pie-pagina .grupo-1 .box p{
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.pie-pagina .grupo-1 .red-social a{
+  display: inline-block;
+  text-decoration: none;
+  width: 45px;
+  height: 45px;
+  line-height: 45px;
+  color: #fff;
+  margin-right: 10px;
+  background-color: #323131;
+  text-align: center;
+  transition: all 300ms ease;
+}
+
+.pie-pagina .grupo-1 .red-social a:hover{
+  color: #e78fe2;
+}
+
+.pie-pagina .grupo-2{
+  background-color: #323131;
+  padding: 15px 10px;
+  text-align: center;
+  color: white;
+}
+
+@media screen and (max-width:800px) {
+  .pie-pagina .grupo-1{
+    width: 90%;
+    grid-template-columns: repeat(1, 1fr);
+    grid-gap: 30px;
+    padding: 35px 0px;
+  }
+}
