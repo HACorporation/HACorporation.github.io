@@ -340,21 +340,14 @@ body{
 }
 
 .divider {
-    margin: 30px 0; /* Aumenta de 20px a 30px para separar más arriba y abajo */
-    border-bottom: 1px solid #eee;
-    position: relative;
-    display: flex;
-    justify-content: center; /* Asegura que la 'O' esté centrada */
+    margin: 30px 0;
+    border-bottom: 1px solid #333; /* Línea oscura */
 }
 
 .divider span {
-    background: white;
-    padding: 0 15px; /* Más espacio a los lados de la 'O' para que la línea no la toque */
-    position: absolute;
-    top: -12px;
-    color: #999;
-    font-size: 14px;
-    left: auto; /* Quitamos el left 45% para que el centrado sea perfecto */
+    background: #121212;    /* Fondo del mismo color que la tarjeta */
+    color: #666;            /* Color de la 'O' más apagado */
+    padding: 0 15px;
 }
 .login-page {
     display: flex;
@@ -365,31 +358,32 @@ body{
 }
 
 .auth-card {
-    background: white;
+    background: #121212;    /* Fondo negro/gris muy oscuro */
     padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 20px;    /* Esquinas de la tarjeta suavizadas */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     width: 100%;
     max-width: 400px;
     text-align: center;
+    color: white;           /* Todo el texto por defecto blanco */
 }
 
-/* Estilo específico para que el título se vea como en tu imagen 2 */
 .auth-card h2 {
-    font-size: 22px;
-    margin-bottom: 25px;
-    color: #333;
-    font-weight: 700; /* Negrita para Montserrat Alternates */
-    text-transform: uppercase; /* Para que coincida con "INICIAR SESIÓN..." */
+    color: white;           /* Título blanco */
+    font-weight: 400;       /* Más fino para elegancia */
+    text-transform: none;   /* Opcional: quitar mayúsculas para estilo moderno */
 }
+
 
 .auth-card input {
     width: 100%;
-    padding: 12px;
+    padding: 14px 20px;
     margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 16px;
+    background: #2a2a2a;    /* Fondo oscuro para el input */
+    border: 1px solid #444;
+    border-radius: 50px;    /* REDONDEADO TOTAL */
+    color: white;           /* Texto blanco al escribir */
+    font-size: 15px;
     outline: none;
 }
 
@@ -397,10 +391,10 @@ body{
 .btn-primary {
     width: 100%;
     padding: 14px;
-    background-color: #3483fa;
-    color: white;
+    background-color: white; /* Blanco como la imagen */
+    color: black;            /* Texto negro */
     border: none;
-    border-radius: 6px;
+    border-radius: 50px;     /* REDONDEADO TOTAL */
     font-size: 16px;
     cursor: pointer;
     font-weight: 700;
@@ -410,19 +404,25 @@ body{
 .btn-google, .btn-fb {
     width: 100%;
     padding: 12px;
-    background: #000; 
+    background: #212121; /* Gris oscuro de tu imagen */
     color: white;
-    border: none;
-    border-radius: 6px;
+    border: 1px solid #444; /* Borde sutil */
+    border-radius: 50px;    /* REDONDEADO TOTAL */
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 12px;              /* Espacio para el icono */
     margin-top: 15px;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 14px;
+    transition: background 0.3s;
 }
+
+.btn-google:hover, .btn-fb:hover {
+    background: #333;
+}
+
 
 
 
