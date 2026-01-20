@@ -350,12 +350,11 @@ body{
     padding: 0 15px;
 }
 .login-page {
-    background: #121212;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: #ebebeb !important;
+    background: #000000 !important; /* Cambiado a negro total */
 }
 
 .auth-card {
@@ -423,3 +422,4 @@ body{
 .btn-google:hover, .btn-fb:hover {
     background: #333;
 }
+
