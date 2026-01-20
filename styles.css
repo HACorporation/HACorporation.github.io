@@ -329,7 +329,8 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #ebebeb; /* Color gris claro de fondo como Mercado Libre */
+    min-height: 100vh;
+    background: #ebebeb !important; /* El !important asegura que gane el color gris */
 }
 
 .auth-card {
@@ -401,5 +402,6 @@ body{
     gap: 10px;
     margin-top: 10px;
 }
+
 
 
