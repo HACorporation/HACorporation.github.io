@@ -341,18 +341,19 @@ body{
 
 .divider {
     margin: 30px 0;
-    border-bottom: 1px solid #444; /* Línea oscura */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3); 
     position: relative;
     display: flex;
     justify-content: center;
 }
 
 .divider span {
-    background: #252525;    /* Fondo del mismo color que la tarjeta */
-    color: #888;            /* Color de la 'O' más apagado */
+    background: #252525;    /* Asegúrate de que coincida con el fondo de tu .auth-card */
+    color: #ffffff;         /* También puse la "O" en blanco para que se vea mejor */
     padding: 0 15px;
     position: absolute;
     top: -10px;
+    font-size: 14px;
 }
 .login-page {
     display: flex;
@@ -428,6 +429,7 @@ body{
 .btn-google:hover, .btn-fb:hover {
     background: #333;
 }
+
 
 
 
