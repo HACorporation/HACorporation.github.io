@@ -4,11 +4,11 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 const auth = getAuth(app);
 
 onAuthStateChanged(auth, (user) => {
-    if (user) {
-        // Si hay usuario, mostramos el contenido
-        document.getElementById("main-content").style.display = "block";
-    } else {
-        // Si no hay usuario, redirigimos al login
-        window.location.href = "login.html";
-    }
+  if (user) {
+    // Si inició sesión, mostramos el contenido
+    document.getElementById("main-content").style.display = "block";
+  } else {
+    // Si no, lo mandamos al login de inmediato
+    window.location.href = "login.html";
+  }
 });
