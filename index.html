@@ -2,12 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>IoT_Developments</title>
+    <title>HAC</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="fontello/css/fontello.css">
     <script src="https://kit.fontawesome.com/bd344212b0.js" crossorigin="anonymous"></script> 
 </head>
-<body>
+<body id="main-content" style="display: none;">
     <header class="header">
        <div class="container">
        <div class="btn-menu">
@@ -15,7 +15,7 @@
             </label>
        </div>
             <div class="logo">
-                <h1>IoT Developments</h1>
+                <h1>Home Automation Corp.</h1>
             </div>
             <nav class="menu">
                 <a href="#">Inicio</a>
@@ -34,6 +34,7 @@
             <a href="#Servicios">Servicios</a>
             <a href="#SIGUENOS">Acerca de..</a>
             <a href="#SIGUENOS">Contactanos</a>
+            <a href="#" id="logout">Cerrar sesión</a>
         </nav>
         <label for="btn-menu" class="icon-cancel"></label>
     </div>
@@ -41,23 +42,23 @@
 
     <section class="contenido-principal">
         <h2><a name="quienes"><b>QUIENES SOMOS?</b></a></h2>
-        <br><p> IoT Developments Nos especializamos en el diseño y desarrollo de soluciones innovadoras en el ámbito de Internet de las Cosas (IoT), ofreciendo integración de dispositivos inteligentes, automatización de procesos y conectividad en tiempo real para mejorar la eficiencia y productividad de nuestros clientes. Nuestro equipo brinda soluciones personalizadas y escalables, optimizando el control y monitoreo remoto en diversos sectores. </p></br>
+        <br><p>Somos una empresa enfocada en el desarrollo de casas inteligentes, implementamos dispositivos inteligentes, para que tu hogar sea cómodo y confortable al momento de ejecutar una acción simple, que en este caso lo podras hacer de manera remota o en el caso de asistentes de voz se puede controlar dando comandos a los mismos.</p></br>
     </section>
     <main class="main">
         <div>
             <br><h3><a name="Servicios"><b>Servicios</b></a><h3></br>
         </div>
         <div>
-            <br><br><h4>Sistema para persianas inteligentes</h4></br></br>
+            <br><br><h4>Automation blinds</h4></br></br>
             <br><li>Persianas Eléctricas.</li></br> 
             <br><li>Se operan mediante control remoto o por medio de una app de acuerdo a la marca del producto.</li></br> 
-            <br><li>Acoplamiento, para persianas existentes.</li></br>
+            <br><li>Acoplamiento en el caso de persianas existentes.</li></br>
             <br><li>Vinculación con asistentes de voz.</li></br>
         </div>
     </main>
     <section class="tercero">
         <div>
-            <br><br><br><h2>Luces inteligentes</h2></br></br></br>
+            <br><br><br><h2>Automation lights</h2></br></br></br>
             <br><p><li>Para el control de luces, se trabaja de preferencia con luces led y se instala luces Led / RGB.</li></li></p></br> 
             <br><p><li>Se operan por medio de una app, de acuerdo a la marca del producto.</li></p></br> 
             <br><p><li>Para el control de la luz, se tiene un dimmer(regulador de luz), para que se pueda regular la luz a la intensidad que desea.</li></p></br>
@@ -66,7 +67,8 @@
     </section>
     <section class="cuarto">
         <div>
-            <br><br><br><h2>Instalacion de cámaras</h2></br></br></br>
+            <br><br><br><h2>Automation camera</h2></br></br></br>
+            <br><p><li>Instalaciín cámaras.</li></li></p></br> 
             <br><p><li>Se operan por medio de una app, de acuerdo a la marca del producto.</li></p></br> 
             <br><p><li>Existen diferentes tipos de configuraciones, para que detecte movimiento, suene una alarma (en el caso que la cámara disponga de alarma), hablar por medio de la cámara (en el caso que la cámara disponga de bocina), dado el caso se podra igual configurar que todo lo que observe la cámara, envie una notificación al móvil para estar informado de todo lo que pasa en el hogar.</li></p></br>
             <br><p><li>Vinculación con asistentes de voz.</li></p></br>
@@ -74,7 +76,7 @@
     </section>
     <section class="quinto">
         <div>
-            <br><br><br><h2>Cerraduras inteligentes</h2></br></br></br>
+            <br><br><br><h2>Smart lock</h2></br></br></br>
             <br><p><li>Instalación de cerraduras inteligentes para el hogar.</li></li></p></br> 
             <br><p><li>Se operan por medio de una app, de acuerdo a la marca del producto.</li></p></br> 
             <br><p><li>Existen diferentes tipos de configuraciones, puede ser desbloqueo de cerradura por huella dactilar, código de numeros, tarjeta o por el móvil.</li></p></br>
@@ -82,8 +84,8 @@
     </section>
     <section class="sexto">
         <div>
-            <br><br><br><h2>Desarrollo IoT (Internet de las cosas)</h2></br></br></br>
-            <br><p><li>Implementación IoT para puertas batientes, para que se puedan operar mediante el móvil, ya sea para abrir o cerrar la puerta que se desea, desde cualquier parte.</li></li></p></br> 
+            <br><br><br><h2>Swing door automation</h2></br></br></br>
+            <br><p><li>Implementación IoT para puertas, puertas batientes, para que se puedan operar mediante el móvil, ya sea para abrir o cerrar la puerta que se desea, desde cualquier parte.</li></li></p></br> 
         </div>
     </section>
     <footer class="pie-pagina">
@@ -97,7 +99,7 @@
             </div>
             <div class="box">
                 <h2>Acerca de</h2>
-                <p>En IoT Developments, Somos una empresa dedicada a impulsar la innovación a través de soluciones IoT de vanguardia. Con un enfoque en la calidad, confiabilidad y escalabilidad, ayudamos a nuestros clientes a transformar sus operaciones mediante la integración de tecnología conectada. Desde la creación de dispositivos inteligentes hasta la automatización y análisis de datos en tiempo real, nos comprometemos a brindar soluciones personalizadas que optimicen la eficiencia y la toma de decisiones. Nuestra misión es liderar el futuro digital, haciendo que la conectividad sea accesible y efectiva en múltiples industrias, siempre adaptándonos a las necesidades específicas de cada proyecto.</p>
+                <p>En Home Automation Corp., estamos comprometidos a transformar los hogares en espacios inteligentes y conectados. Desde nuestra fundación en [año de fundación], hemos estado liderando la industria de la domótica, brindando soluciones innovadoras y personalizadas a nuestros clientes.</p>
                 
             </div>
             <div class="box">
@@ -106,7 +108,7 @@
                    <a href="https://www.facebook.com/profile.php?id=61553521114504" class="fa fa-facebook"></a>
                    <a href="https://www.instagram.com/home_automation_corp/" class="fa fa-instagram"></a>
                    <a href="https://twitter.com/home" class="fa fa-x"></a>
-                   <a href="https://w.app/HomeAutoationCorp" class="fa fa-whatsapp"></a> 
+                   <a href="https://web.whatsapp.com" class="fa fa-whatsapp"></a> 
                 </div>
             </div>
         </div>
@@ -114,5 +116,6 @@
             <small>&copy; 2023 <b>Home automation corporation.</b> Todos los derechos reservados.</small>
          </div> 
     </footer>
+    <script type="module" src="./auth-guard.js"></script>
 </body>
 </html>
