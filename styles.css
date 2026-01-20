@@ -350,6 +350,7 @@ body{
     padding: 0 15px;
 }
 .login-page {
+    padding: 15px
     display: flex;
     justify-content: center;
     align-items: center;
@@ -358,7 +359,7 @@ body{
 }
 
 .auth-card {
-    background: #121212;    /* Fondo negro/gris muy oscuro */
+    background: #252525;    /* Fondo negro/gris muy oscuro */
     padding: 40px;
     border-radius: 20px;    /* Esquinas de la tarjeta suavizadas */
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
@@ -422,4 +423,5 @@ body{
 .btn-google:hover, .btn-fb:hover {
     background: #333;
 }
+
 
