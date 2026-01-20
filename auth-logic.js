@@ -1,15 +1,13 @@
-// 1. Importamos 'auth' ya inicializado desde tu config
 import { auth } from "./firebase-config.js"; 
 
-// 2. Importamos las funciones necesarias de la librería
 import {
   signInWithPopup,
+  FacebookAuthProvider,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// --- NO PONGAS getAuth(app) AQUÍ, ya tenemos 'auth' arriba ---
 
 // Lógica para cambiar entre formularios (Login / Registro)
 const loginForm = document.getElementById("login-form");
@@ -60,6 +58,25 @@ document.getElementById("google-login").onclick = () => {
     })
     .catch(err => alert("Error con Google: " + err.message));
 };
+
+// Lógica para Facebook
+document.getElementById("facebook-login").onclick = () => {
+  const provider = new FacebookAuthProvider();
+  
+  // Opcional: Esto ayuda a pedir permisos específicos si fuera necesario
+  provider.addScope('email');
+
+  signInWithPopup(auth, provider)
+    .then((result) => {
+        console.log("Usuario entró con Facebook:", result.user);
+        window.location.href = "index.html";
+    })
+    .catch((error) => {
+        console.error("Error con Facebook:", error.code);
+        alert("Error al conectar con Facebook: " + error.message);
+    });
+};
+
 
 
 
