@@ -9,6 +9,7 @@
 }
 
 body{
+
     background: url(https://www.view-enterprise.com/iraq/wp-content/uploads/2022/07/slider-smart-home-3.png);
     background-size: 100vw 100vh;
     background-repeat: no-repeat;
@@ -222,7 +223,7 @@ body{
   margin-top: 200px;
   margin-bottom: 100px;
   height: 100vh;
-  background:url(https://i.pinimg.com/originals/36/c4/e8/36c4e82fd346c433467f0bcb56b8e34e.gif);
+  background:url(https://electronics360.globalspec.com/images/assets/358/12358/63d7a23082fc29a6c33e139b61ede074_original.gif);
   background-size: 100vw 100vh;
   background-repeat: no-repeat;
   padding: 40px 100px;
@@ -322,3 +323,4 @@ body{
     padding: 35px 0px;
   }
 }
+
