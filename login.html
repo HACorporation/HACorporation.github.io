@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Acceso - Mi Web</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="login-page">
+    <div class="auth-card">
+        <div id="login-form">
+            <h2>¡Hola! Ingresa tu e-mail</h2>
+            <input type="email" id="login-email" placeholder="Correo electrónico">
+            <input type="password" id="login-password" placeholder="Contraseña">
+            <button id="btn-login" class="btn-primary">Continuar</button>
+            <p>¿No tienes cuenta? <a href="#" id="go-to-register">Crear cuenta</a></p>
+        </div>
+
+        <div id="register-form" style="display: none;">
+            <h2>Crea tu cuenta</h2>
+            <input type="text" id="reg-name" placeholder="Nombre completo">
+            <input type="email" id="reg-email" placeholder="Correo electrónico">
+            <input type="password" id="reg-password" placeholder="Contraseña (6+ caracteres)">
+            <button id="btn-register-confirm" class="btn-primary">Registrarme</button>
+            <p>¿Ya tienes cuenta? <a href="#" id="go-to-login">Inicia sesión</a></p>
+        </div>
+
+        <div class="divider"><span>O</span></div>
+
+        <button id="google-login" class="btn-google">Entrar con Google</button>
+        <button id="facebook-login" class="btn-fb">Entrar con Facebook</button>
+    </div>
+
+    <script type="module" src="./auth-logic.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+import { app } from "./firebase-config.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // Si hay usuario, mostramos el contenido
+        document.getElementById("main-content").style.display = "block";
+    } else {
+        // Si no hay usuario, redirigimos al login
+        window.location.href = "login.html";
+    }
+});
