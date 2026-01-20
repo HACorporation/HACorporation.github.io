@@ -334,6 +334,13 @@ body{
     font-family: 'Montserrat Alternates', sans-serif;
 }
 
+.auth-card input, 
+.auth-card button, 
+.auth-card h2, 
+.auth-card p {
+    font-family: 'Montserrat Alternates', sans-serif;
+}
+
 .auth-card {
     background: white;
     padding: 40px;
@@ -426,6 +433,7 @@ body{
 .btn-fb:hover {
     background: #333;
 }
+
 
 
 
