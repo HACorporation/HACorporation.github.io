@@ -325,20 +325,21 @@ body{
 }
 /* --- ESTILOS PARA EL LOGIN --- */
 
+.login-page, 
+.login-page input, 
+.login-page button, 
+.login-page h2, 
+.login-page p,
+.login-page a {
+    font-family: 'Montserrat Alternates', sans-serif !important;
+}
+
 .login-page {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: #ebebeb !important; /* El !important asegura que gane el color gris */
-    font-family: 'Montserrat Alternates', sans-serif;
-}
-
-.auth-card input, 
-.auth-card button, 
-.auth-card h2, 
-.auth-card p {
-    font-family: 'Montserrat Alternates', sans-serif;
+    background: #ebebeb !important;
 }
 
 .auth-card {
@@ -351,10 +352,13 @@ body{
     text-align: center;
 }
 
+/* Estilo específico para que el título se vea como en tu imagen 2 */
 .auth-card h2 {
-    font-size: 24px;
+    font-size: 22px;
     margin-bottom: 25px;
     color: #333;
+    font-weight: 700; /* Negrita para Montserrat Alternates */
+    text-transform: uppercase; /* Para que coincida con "INICIAR SESIÓN..." */
 }
 
 .auth-card input {
@@ -364,42 +368,26 @@ body{
     border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 16px;
+    outline: none;
 }
 
+/* Botón principal azul */
 .btn-primary {
     width: 100%;
-    padding: 12px;
-    background-color: #3483fa; /* Azul Mercado Libre */
+    padding: 14px;
+    background-color: #3483fa;
     color: white;
     border: none;
     border-radius: 6px;
     font-size: 16px;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 700;
 }
 
-.btn-primary:hover {
-    background-color: #2968c8;
-}
-
-.divider {
-    margin: 20px 0;
-    border-bottom: 1px solid #eee;
-    position: relative;
-}
-
-.divider span {
-    background: white;
-    padding: 0 10px;
-    position: absolute;
-    top: -10px;
-    left: 45%;
-    color: #999;
-}
-
-.btn-google {
+/* Botones de Google y Facebook (Negros como en tu imagen) */
+.btn-google, .btn-fb {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     background: #000; 
     color: white;
     border: none;
@@ -410,28 +398,8 @@ body{
     justify-content: center;
     gap: 10px;
     margin-top: 10px;
-    font-weight: 600;
-}
-.btn-google:hover {
-    background: #333;
-}
-.btn-fb {
-    width: 100%;
-    padding: 10px;
-    background: #000; 
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 10px;
-    font-weight: 600;
-}
-.btn-fb:hover {
-    background: #333;
+    font-weight: 700;
+    font-size: 14px;
 }
 
 
