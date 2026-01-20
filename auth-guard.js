@@ -5,10 +5,9 @@ const auth = getAuth(app);
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    // Si inició sesión, mostramos el contenido
+    // IMPORTANTE: El ID "main-content" debe existir en el body de index.html
     document.getElementById("main-content").style.display = "block";
   } else {
-    // Si no, lo mandamos al login de inmediato
     window.location.href = "login.html";
   }
 });
