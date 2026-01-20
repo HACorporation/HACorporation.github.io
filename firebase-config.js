@@ -1,4 +1,3 @@
-  export const app = initializeApp(firebaseConfig);
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
   // TODO: Add SDKs for Firebase products that you want to use
@@ -16,5 +15,6 @@
     };
 
   // Initialize Firebase
-  const app = initializeApp(firebaseConfig); // Inicilizar Firebase con la configuracion de tu proyecto
+  export const app = initializeApp(firebaseConfig); // Inicilizar Firebase con la configuracion de tu proyecto
+
 
