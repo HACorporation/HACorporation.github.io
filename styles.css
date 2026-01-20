@@ -334,6 +334,28 @@ body{
     font-family: 'Montserrat Alternates', sans-serif !important;
 }
 
+#login-form p, #register-form p {
+    margin-bottom: 25px; /* Espacio hacia abajo antes de la "O" */
+    margin-top: 15px;    /* Espacio hacia arriba respecto al botón azul */
+}
+
+.divider {
+    margin: 30px 0; /* Aumenta de 20px a 30px para separar más arriba y abajo */
+    border-bottom: 1px solid #eee;
+    position: relative;
+    display: flex;
+    justify-content: center; /* Asegura que la 'O' esté centrada */
+}
+
+.divider span {
+    background: white;
+    padding: 0 15px; /* Más espacio a los lados de la 'O' para que la línea no la toque */
+    position: absolute;
+    top: -12px;
+    color: #999;
+    font-size: 14px;
+    left: auto; /* Quitamos el left 45% para que el centrado sea perfecto */
+}
 .login-page {
     display: flex;
     justify-content: center;
@@ -397,10 +419,11 @@ body{
     align-items: center;
     justify-content: center;
     gap: 10px;
-    margin-top: 10px;
+    margin-top: 15px;
     font-weight: 700;
     font-size: 14px;
 }
+
 
 
 
