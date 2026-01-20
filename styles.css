@@ -331,6 +331,7 @@ body{
     align-items: center;
     min-height: 100vh;
     background: #ebebeb !important; /* El !important asegura que gane el color gris */
+    font-family: 'Montserrat Alternates', sans-serif;
 }
 
 .auth-card {
@@ -425,6 +426,7 @@ body{
 .btn-fb:hover {
     background: #333;
 }
+
 
 
 
