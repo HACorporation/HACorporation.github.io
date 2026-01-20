@@ -1,6 +1,5 @@
 import { app } from "./firebase-config.js";
 import {
-  getAuth,
   signInWithPopup,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
@@ -50,5 +49,6 @@ document.getElementById("google-login").onclick = () => {
     .then(() => location.href = "index.html")
     .catch(err => alert(err.message));
 };
+
 
 
