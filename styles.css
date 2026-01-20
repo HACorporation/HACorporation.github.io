@@ -350,7 +350,6 @@ body{
     padding: 0 15px;
 }
 .login-page {
-    padding: 15px
     display: flex;
     justify-content: center;
     align-items: center;
@@ -370,6 +369,7 @@ body{
 }
 
 .auth-card h2 {
+    padding: 40px;
     color: white;           /* Título blanco */
     font-weight: 400;       /* Más fino para elegancia */
     text-transform: none;   /* Opcional: quitar mayúsculas para estilo moderno */
@@ -423,5 +423,6 @@ body{
 .btn-google:hover, .btn-fb:hover {
     background: #333;
 }
+
 
 
