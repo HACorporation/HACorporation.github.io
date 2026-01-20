@@ -350,6 +350,7 @@ body{
     padding: 0 15px;
 }
 .login-page {
+    background: #121212;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -422,16 +423,3 @@ body{
 .btn-google:hover, .btn-fb:hover {
     background: #333;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
