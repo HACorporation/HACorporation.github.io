@@ -323,4 +323,83 @@ body{
     padding: 35px 0px;
   }
 }
+/* --- ESTILOS PARA EL LOGIN --- */
+
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #ebebeb; /* Color gris claro de fondo como Mercado Libre */
+}
+
+.auth-card {
+    background: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.auth-card h2 {
+    font-size: 24px;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.auth-card input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background-color: #3483fa; /* Azul Mercado Libre */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background-color: #2968c8;
+}
+
+.divider {
+    margin: 20px 0;
+    border-bottom: 1px solid #eee;
+    position: relative;
+}
+
+.divider span {
+    background: white;
+    padding: 0 10px;
+    position: absolute;
+    top: -10px;
+    left: 45%;
+    color: #999;
+}
+
+.btn-google {
+    width: 100%;
+    padding: 10px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
 
