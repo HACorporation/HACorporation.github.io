@@ -9,7 +9,7 @@ import {
 
 const auth = getAuth(app);
 
-// --- 1. Lógica para cambiar entre Login y Registro ---
+// Lógica para mostrar/ocultar formularios
 const loginForm = document.getElementById("login-form");
 const registerForm = document.getElementById("register-form");
 
@@ -25,31 +25,30 @@ document.getElementById("go-to-login").onclick = (e) => {
     loginForm.style.display = "block";
 };
 
-// --- 2. Lógica de Registro ---
+// Registro
 document.getElementById("btn-register-confirm").onclick = () => {
-  const email = document.getElementById("reg-email").value;
-  const password = document.getElementById("reg-password").value;
-
-  createUserWithEmailAndPassword(auth, email, password)
+  const emailVal = document.getElementById("reg-email").value;
+  const passVal = document.getElementById("reg-password").value;
+  createUserWithEmailAndPassword(auth, emailVal, passVal)
     .then(() => location.href = "index.html")
     .catch(err => alert("Error al crear cuenta: " + err.message));
 };
 
-// --- 3. Lógica de Login ---
+// Login
 document.getElementById("btn-login").onclick = () => {
-  const email = document.getElementById("login-email").value;
-  const password = document.getElementById("login-password").value;
-
-  signInWithEmailAndPassword(auth, email, password)
+  const emailVal = document.getElementById("login-email").value;
+  const passVal = document.getElementById("login-password").value;
+  signInWithEmailAndPassword(auth, emailVal, passVal)
     .then(() => location.href = "index.html")
-    .catch(err => alert("Usuario o contraseña incorrectos"));
+    .catch(err => alert("Correo o contraseña incorrectos"));
 };
 
-// --- 4. Google ---
+// Google
 document.getElementById("google-login").onclick = () => {
   const provider = new GoogleAuthProvider();
   signInWithPopup(auth, provider)
     .then(() => location.href = "index.html")
     .catch(err => alert(err.message));
 };
+
 
