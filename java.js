@@ -35,24 +35,23 @@ document.querySelector(".analyzer").appendChild(infoContainer);
 
 /* ---------- RESIZE CANVAS ---------- */
 function resizeCanvas() {
-  // Usamos clientWidth que es más confiable para elementos ocultos que acaban de aparecer
-  const width = canvas.clientWidth;
-  const height = canvas.clientHeight;
-  
-  if (width === 0) return; // Si sigue en 0, no calculamos nada aún
-
+  const rect = canvas.getBoundingClientRect();
   const dpr = window.devicePixelRatio || 1;
+
+  // Si el ancho es 0, intentamos usar el ancho del cliente (más fiable al aparecer)
+  const width = rect.width || canvas.clientWidth;
+  const height = rect.height || canvas.clientHeight;
 
   canvas.width = width * dpr;
   canvas.height = height * dpr;
 
   ctx2d.setTransform(dpr, 0, 0, dpr, 0, 0);
   
-  // Si ya había un audio cargado, lo redibuja automáticamente
+  // Si ya se cargó un audio, lo redibujamos inmediatamente
   if (audioBuffer) drawWaveform(audioBuffer);
 }
 
-// ESTA LÍNEA ES VITAL: Permite que auth-guard.js llame a esta función
+// ESTA LÍNEA ES CLAVE: Permite que auth-guard.js llame a esta función
 window.triggerResize = resizeCanvas;
 
 /* ---------- DURACIÓN ---------- */
@@ -65,22 +64,50 @@ durationInput.addEventListener("input", () => {
 
 /* ---------- CARGAR AUDIO ---------- */
 fileInput.addEventListener("change", async () => {
-  if (!ctx) ctx = new AudioContext();
+  // 1. Inicializar contexto de audio (soporte para todos los navegadores)
+  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
   if (ctx.state === "suspended") await ctx.resume();
 
   const file = fileInput.files[0];
   if (!file) return;
 
-  const arrayBuffer = await file.arrayBuffer();
-  audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+  try {
+    // 2. Procesar el archivo
+    const arrayBuffer = await file.arrayBuffer();
+    audioBuffer = await ctx.decodeAudioData(arrayBuffer);
 
-  audio.src = URL.createObjectURL(file);
-  audio.load();
+    // Configurar audio nativo para la reproducción
+    audio.src = URL.createObjectURL(file);
+    audio.load();
 
-  playPosition = 0;
-  selectionStart = 0;
-  drawWaveform(audioBuffer);
+    // 3. Resetear variables de vista
+    playPosition = 0;
+    selectionStart = 0;
+    scrollOffset = 0; // Resetear posición al inicio
+    zoom = 1;         // Resetear zoom al original
 
+    // 4. ¡CRÍTICO! Recalcular tamaño del canvas antes de dibujar
+    // Esto soluciona que el rectángulo esté en negro
+    resizeCanvas(); 
+
+    // 5. Dibujar la onda (ahora sí se verá)
+    drawWaveform(audioBuffer);
+
+    // 6. Actualizar la información (Tempo y Tonalidad)
+    const bpm = estimateBPM(audioBuffer);
+    const key = detectKey(audioBuffer);
+    
+    // Usamos el div que ya tienes en el HTML
+    const infoDiv = document.querySelector(".audio-info");
+    if (infoDiv) {
+      infoDiv.innerHTML = `<span>Tempo: ${bpm} BPM</span> | <span>Tonalidad: ${key}</span>`;
+    }
+
+  } catch (err) {
+    console.error("Error al cargar audio:", err);
+    alert("Hubo un error al procesar el audio. Intenta con otro archivo.");
+  }
+});
   // ✅ Actualizar info de audio
   const bpm = estimateBPM(audioBuffer);
   const keys = detectKey(audioBuffer);
@@ -464,3 +491,4 @@ function detectKey(buffer) {
   return result;
 
 }
+
