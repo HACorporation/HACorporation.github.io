@@ -6,7 +6,13 @@ onAuthStateChanged(auth, (user) => {
   if (user) {
     if (mainContent) {
       mainContent.style.display = "block";
-      window.dispatchEvent(new Event('resize'));
+      
+      // Le damos 100ms al navegador para que el rectangulo deje de medir 0px
+      setTimeout(() => {
+        if (typeof window.triggerResize === "function") {
+          window.triggerResize();
+        }
+      }, 100);
     }
   } else {
     window.location.href = "login.html";
@@ -22,5 +28,6 @@ if (logoutBtn) {
         });
     };
 }
+
 
 
