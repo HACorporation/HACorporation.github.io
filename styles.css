@@ -1,328 +1,248 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat|Montserrat+Alternates|Poppins&display=swap');
 
+/* -------------------- RESET -------------------- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Montserrat Alternates', sans-serif;
+body { 
+  font-family: 'Orbitron', sans-serif; 
+  color: #f0f0f0; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  min-height: 100vh; 
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 20%, #ffffff10, #000000);
+  position: relative;
 }
 
-body{
-
-    background: url(https://www.view-enterprise.com/iraq/wp-content/uploads/2022/07/slider-smart-home-3.png);
-    background-size: 100vw 100vh;
-    background-repeat: no-repeat;
-    background-color: rgb(5, 5, 5);
+/* -------------------- FONDO ANIMADO -------------------- */
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url('https://res.cloudinary.com/dgmeodm8y/image/upload/v1768664112/fondo_ph1g09.png') center/cover no-repeat;
+  opacity: 0.05;
+  animation: lightningAnim 4s infinite linear;
+  z-index: 0;
+  pointer-events: none;
 }
 
-.capa{
-    position: absolute;
-    width: 100%;
-    height: 100vh;
-    background: rgba(3, 3, 3, 0);
-    z-index: -1;
-    top: 0;left: 0;
+@keyframes lightningAnim {
+  0%,100% { opacity: 0.05; }
+  10%,30%,50%,70%,90% { opacity: 0.15; }
 }
 
-.header{
-    width: 100%;
-    height: 70px;
-    position: fixed;
-    top: 0;left: 0;
+/* -------------------- CONTAINER -------------------- */
+.container {
+  width: 900px;
+  padding: 28px;
+  border-radius: 20px;
+  background: rgba(15, 15, 15, 0.95);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
 }
 
-.container{
-    width: 90%;
-    max-width: 1200px;
-    margin: auto;
-}
-
-/*Menu de lineas*/
-
-.container .btn-menu, .logo{
-    float: left;
-    line-height: 70px;
-}
-.container .btn-menu label{
-    color: rgb(234, 228, 228);
-    font-size: 20px;
-    cursor: pointer;
-}
-
-/*Titulo home automation corp izquierda*/
-
-.logo h1{
-    color: #fff;
-    font-weight: 400;
-    font-size: 22px;
-    margin-left: 10px;
-}
-
-.container .menu{
-    float: right;
-    line-height: 70px;
-}
-
-.container .menu a{
-    display: inline-block;
-    padding: 15px 10px;
-    line-height: normal;
-    text-decoration: none;
-    color: #fff;
-    transition: all 0.3s ease;
-    border-bottom: 1px solid transparent;
-    font-size: 15px;
-}
-
-.container .menu a:hover{
-    border-bottom: 2px solid #c7c7c7;
-    padding: 5px 10px;
-}
-
-#btn-menu{
-    display: none;
-}
-
-/*Controlar la sombra al momento de desplegar el menu de la izquierda*/
-.container-menu{
-    position: absolute;
-    background: rgba(64, 59, 88, 0.5);
-    width: 100%;
-    height: 100vh;
-    top: 0;left: 0;
-    transition: all 500ms ease;
-    opacity: 0;
-    visibility: hidden;
-}
-
-#btn-menu:checked ~ .container-menu{
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Menu de la izquierda mandos*/
-
-.cont-menu{
-    width: 100%;
-    max-width: 250px;
-    background: #353434;
-    height: 100vh;
-    position: relative;
-    transition: all 500ms ease;
-    transform: translateX(-100%);
-}
-
-/*Posiionar el menu izquierdo a la linea de la izquierda*/
-
-#btn-menu:checked ~ .container-menu .cont-menu{
-    transform: translateX(0%);
-}
-
-/*se refiere al espacio de arriba del menu de la izquierda*/
-
-.cont-menu nav{
-    transform: translateY(15%);
-}
-
-/*se refiere al menu izquierdo para la separacion de titulos*/
-
-.cont-menu nav a{
-    display: block;
-    text-decoration: none;
-    padding: 20px;
-    color: #c7c7c7;
-    border-left: 5px solid transparent;
-    transition: all 400ms ease;
-}
-
-.cont-menu nav a:hover{
-    border-left: 5px solid #777777;
-    background: #1f1f1f;
-}
-
-.cont-menu label{
-    position: absolute;
-    right: 5px;
-    top: 10px;
-    color: #fff;
-    cursor: pointer;
-    font-size: 18px;
-}
-
-/*Referente al cuerpo de la pagina*/
-
-.contenido-principal{
-  margin-top: 725px;
-  margin-bottom: 50px;
-  height: 40vh;
-  background-color: #393737;
-  padding: 50px 20px;
+/* -------------------- TÍTULO -------------------- */
+.title {
+  font-size: 44px;
   text-align: center;
-  color: #fff;
-  font-size: 20px;
+  color: #ff2f92;
+  text-shadow: 0 0 8px #ff2f92;
 }
 
-.main{
-  margin-top: auto;
-  margin-bottom: -150px;
-  height: 100vh;
-  background:url(https://static.wixstatic.com/media/1492c0_648f4e10fc6c4eabbac8257e6bfda224~mv2.gif);
-  background-size: 100vw 100vh;
-  background-repeat: no-repeat;
-  padding: 40px 100px;
-  text-align: left;
-  color: #fcf9f9;
+/* -------------------- TOP CONTROLS -------------------- */
+.top-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: 14px;
 }
 
-.main h3{
-  text-align: center;
-  font-size: 40px;
+.audio-info {
+  color: #ff8a00;
+  font-weight: bold;
 }
 
-.main h4{
-  text-align: left;
-  font-size: 25px;
+/* -------------------- ANALYZER -------------------- */
+.analyzer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.tercero {
-  margin-top: 200px;
-  margin-bottom: 200px;
-  height: 100vh;
-  background:url(https://i2.wp.com/eloka.net/wp-content/uploads/2019/08/Lighting-Automation.gif?fit=1024%2C1024&ssl=1);
-  background-size: 100vw 100vh;
-  background-repeat: no-repeat;
-  padding: 40px 100px;
-  text-align: left;
-  color: #fff;
+/* -------------------- BOTONES DE CARGA -------------------- */
+.file-btn,
+.pad-load {
+  display: inline-block;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ff2f92, #ff8a00);
+  color: #111;
+  cursor: pointer;
+  font-weight: bold;
+  position: relative;
+  transition: all 0.2s ease;
 }
 
-.tercero h2{
-  text-align: left;
-  font-size: 40px;
+.file-btn:hover,
+.pad-load:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 47, 146, 0.5);
 }
 
-.cuarto {
-  margin-top: -150px;
-  margin-bottom: -150px;
-  height: 100vh;
-  background:url(https://i0.wp.com/www.bovic.co.ke/wp-content/uploads/2019/11/Bovic-Best-Selling-Small-Mini-Smart-Home.gif?fit=1000%2C1000&ssl=1);
-  background-size: 100vw 100vh;
-  background-repeat: no-repeat;
-  padding: 40px 100px;
-  text-align: left;
-  color: #fff;
+.file-btn input,
+.pad-load input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
 }
 
-.cuarto h2{
-  text-align: left;
-  font-size: 40px;
-}
-
-.quinto {
-  margin-top: 200px;
-  margin-bottom: 100px;
-  height: 100vh;
-  background:url(https://electronics360.globalspec.com/images/assets/358/12358/63d7a23082fc29a6c33e139b61ede074_original.gif);
-  background-size: 100vw 100vh;
-  background-repeat: no-repeat;
-  padding: 40px 100px;
-  text-align: left;
-  color: #fff;
-}
-
-.quinto h2{
-  text-align: left;
-  font-size: 40px;
-}
-
-.sexto {
-  margin-top: -50px;
-  margin-bottom: -50px;
-  height: 100vh;
-  background:url(https://www.1control.eu/blog/wp-content/uploads/2022/03/video-cancello-porta-EN.gif);
-  background-size: 100vw 100vh;
-  background-repeat: no-repeat;
-  padding: 40px 100px;
-  text-align: left;
-  color: #fff;
-}
-
-.sexto h2{
-  text-align: left;
-  font-size: 40px;
-}
-
-.pie-pagina{
+/* -------------------- WAVEFORM -------------------- */
+#waveform {
   width: 100%;
-  background-color: #050505;
+  height: 130px;
+  background: #101010;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: inset 0 0 10px rgba(255,255,255,0.05);
 }
 
-.pie-pagina .grupo-1{
-  width: 100%;
-  max-width: 1200px;
-  margin: auto;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-gap: 50;
-  padding: 45px 0px;
-}
-
-.pie-pagina .grupo-1 .box figure{
-  width: 100%;
-  height: 100%;
+/* -------------------- CONTROLES WAVEFORM -------------------- */
+.waveform-controls {
   display: flex;
   justify-content: center;
+  gap: 8px;
+}
+
+.waveform-controls button {
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  background: linear-gradient(135deg, #ff2f92, #ff8a00);
+  color: #111;
+  transition: all 0.2s ease;
+}
+
+.waveform-controls button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255,47,146,0.5);
+}
+
+/* -------------------- SLIDER DE DURACIÓN -------------------- */
+.duration-control {
+  display: flex;
   align-items: center;
+  gap: 12px;
 }
 
-.pie-pagina .grupo-1 .box figure img{
-  width: 250px;
+#duration {
+  width: 180px;
+  accent-color: #ff2f92;
 }
 
-.pie-pagina .grupo-1 .box h2{
-  color: #fff;
-  margin-bottom: 25px;
-  font-size: 20px;
+.duration-value {
+  font-size: 14px;
+  color: #ff8a00;
+  font-weight: bold;
+  min-width: 50px;
+  text-align: right;
 }
 
-.pie-pagina .grupo-1 .box p{
-  color: #fff;
-  margin-bottom: 10px;
+/* -------------------- BOTONES PRINCIPALES -------------------- */
+.main-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.pie-pagina .grupo-1 .red-social a{
-  display: inline-block;
-  text-decoration: none;
-  width: 45px;
-  height: 45px;
-  line-height: 45px;
-  color: #fff;
-  margin-right: 10px;
-  background-color: #323131;
+button#playSelection,
+button#downloadSample {
+  padding: 12px 22px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #00ff9c, #00c97b);
+  color: #111;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+button#playSelection:hover,
+button#downloadSample:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,255,156,0.4);
+}
+
+/* -------------------- PADS -------------------- */
+.pads {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.pad {
+  background: #141414;
+  border-radius: 14px;
+  padding: 12px;
   text-align: center;
-  transition: all 300ms ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  transition: all 0.2s ease;
 }
 
-.pie-pagina .grupo-1 .red-social a:hover{
-  color: #e78fe2;
+.pad:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(255,47,146,0.3);
 }
 
-.pie-pagina .grupo-2{
-  background-color: #323131;
-  padding: 15px 10px;
-  text-align: center;
-  color: white;
+.pad-title {
+  margin-bottom: 6px;
+  font-size: 16px;
+  text-shadow: 0 0 4px #ff2f92;
 }
 
-@media screen and (max-width:800px) {
-  .pie-pagina .grupo-1{
-    width: 90%;
-    grid-template-columns: repeat(1, 1fr);
-    grid-gap: 30px;
-    padding: 35px 0px;
-  }
+.pad button {
+  width: 100%;
+  height: 40px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #ff2f92, #ff8a00);
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
 }
+
+.pad-play.playing {
+  background: linear-gradient(135deg, #00ff9c, #00c97b);
+  color: #111;
+  box-shadow: 0 6px 20px rgba(0,255,156,0.4);
+}
+
+/* -------------------- ESTADO PAD CARGADO -------------------- */
+.pad.loaded .pad-load {
+  display: none;
+}
+
+.pad.loaded .pad-title::after {
+  content: " ●";
+  color: #00ff9c;
+  font-size: 16px;
+  margin-left: 4px;
+}
+
 /* --- ESTILOS PARA EL LOGIN --- */
 
 .login-page, 
@@ -429,8 +349,3 @@ body{
 .btn-google:hover, .btn-fb:hover {
     background: #333;
 }
-
-
-
-
-
