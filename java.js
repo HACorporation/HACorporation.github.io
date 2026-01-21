@@ -20,7 +20,7 @@ const canvas = document.getElementById("waveform");
 const ctx2d = canvas.getContext("2d");
 
 let selectionStart = 0;
-let selectionDuration = parseFloat(durationInput.value || 1.0);
+let selectionDuration = parseFloat(durationInput.value);
 
 const infoContainer = document.querySelector(".audio-info");
 
@@ -28,7 +28,7 @@ const infoContainer = document.querySelector(".audio-info");
 let mediaRecorder;
 let recordedChunks = [];
 let audioStreamDest; 
-const padSources = [null, null, null, null]; // Guardamos los nodos de conexión
+const padSources = [null, null, null, null]; 
 
 /* ---------- RESIZE CANVAS ---------- */
 function resizeCanvas() {
@@ -43,7 +43,6 @@ function resizeCanvas() {
   if (audioBuffer) drawWaveform(audioBuffer);
 }
 window.triggerResize = resizeCanvas;
-window.addEventListener('resize', resizeCanvas);
 
 /* ---------- DURACIÓN ---------- */
 durationInput.addEventListener("input", () => {
@@ -69,8 +68,7 @@ fileInput.addEventListener("change", async () => {
     audioBuffer = await ctx.decodeAudioData(arrayBuffer);
     audio.src = URL.createObjectURL(file);
     audio.load();
-    scrollOffset = 0; 
-    zoom = 1;
+    scrollOffset = 0; zoom = 1;
     resizeCanvas(); 
     displayAudioInfo(estimateBPM(audioBuffer), detectKey(audioBuffer));
     drawWaveform(audioBuffer);
@@ -79,45 +77,34 @@ fileInput.addEventListener("change", async () => {
   }
 });
 
-/* ---------- LÓGICA DE PADS (RE-CARGA LIMPIA) ---------- */
+/* ---------- LÓGICA DE PADS (RE-CARGABLES) ---------- */
 const padAudios = [new Audio(), new Audio(), new Audio(), new Audio()];
 const padKeys = ["a", "s", "d", "f"];
 
 document.querySelectorAll(".pad-load input").forEach(input => {
   input.addEventListener("change", e => {
-    const idx = parseInt(e.target.dataset.pad);
+    const idx = e.target.dataset.pad;
     const file = e.target.files[0];
     const pad = e.target.closest(".pad");
 
     if (file && ctx) {
-      // 1. LIMPIEZA DE MEMORIA: Liberar el objeto URL anterior
-      if (padAudios[idx].src) {
-        padAudios[idx].pause();
-        URL.revokeObjectURL(padAudios[idx].src);
-      }
-
-      // 2. DESCONEXIÓN DE AUDIO: Quitar el "cable" viejo si existía
-      if (padSources[idx]) {
-        padSources[idx].disconnect();
-        padSources[idx] = null;
-      }
-
-      // 3. CARGAR NUEVO AUDIO
+      if (padAudios[idx].src) URL.revokeObjectURL(padAudios[idx].src);
       padAudios[idx].src = URL.createObjectURL(file);
       padAudios[idx].load();
       pad.classList.add("loaded");
 
-      // 4. NUEVA CONEXIÓN: Crear un nuevo nodo fuente y conectarlo
-      padSources[idx] = ctx.createMediaElementSource(padAudios[idx]);
-      padSources[idx].connect(ctx.destination); 
-      padSources[idx].connect(audioStreamDest); 
+      if (!padSources[idx]) {
+        padSources[idx] = ctx.createMediaElementSource(padAudios[idx]);
+        padSources[idx].connect(ctx.destination); 
+        padSources[idx].connect(audioStreamDest); 
+      }
     }
   });
 });
 
 function playPad(i) {
   const a = padAudios[i];
-  if (!a || !a.src) return;
+  if (!a.src) return;
   a.currentTime = 0;
   a.play();
   const btn = document.querySelector(`.pad-play[data-play="${i}"]`);
@@ -132,44 +119,31 @@ document.addEventListener("keydown", e => {
   if (idx !== -1) playPad(idx);
 });
 
-/* ---------- ZOOM Y SCROLL ---------- */
-const initControls = () => {
-  const btnZoomIn = document.getElementById("zoomIn");
-  const btnZoomOut = document.getElementById("zoomOut");
-  const btnLeft = document.getElementById("scrollLeft");
-  const btnRight = document.getElementById("scrollRight");
+/* ---------- ZOOM Y SCROLL (ARREGLADO) ---------- */
+const btnZoomIn = document.getElementById("zoomIn");
+const btnZoomOut = document.getElementById("zoomOut");
+const btnLeft = document.getElementById("scrollLeft");
+const btnRight = document.getElementById("scrollRight");
 
-  if (btnZoomIn) btnZoomIn.onmousedown = () => isZoomingIn = true;
-  if (btnZoomOut) btnZoomOut.onmousedown = () => isZoomingOut = true;
-  if (btnLeft) btnLeft.onmousedown = () => isScrollingLeft = true;
-  if (btnRight) btnRight.onmousedown = () => isScrollingRight = true;
+btnZoomIn.addEventListener("mousedown", () => isZoomingIn = true);
+btnZoomOut.addEventListener("mousedown", () => isZoomingOut = true);
+btnLeft.addEventListener("mousedown", () => isScrollingLeft = true);
+btnRight.addEventListener("mousedown", () => isScrollingRight = true);
 
-  window.onmouseup = () => {
-    isZoomingIn = isZoomingOut = isScrollingLeft = isScrollingRight = false;
-  };
-};
-
-initControls();
+window.addEventListener("mouseup", () => {
+  isZoomingIn = false;
+  isZoomingOut = false;
+  isScrollingLeft = false;
+  isScrollingRight = false;
+});
 
 function animate() {
   if (audioBuffer) {
     let redraw = false;
-    const scrollAmount = 0.05 / zoom;
-
-    if (isScrollingLeft) { 
-      scrollOffset -= scrollAmount; 
-      if (scrollOffset < 0) scrollOffset = 0; 
-      redraw = true; 
-    }
-    if (isScrollingRight) { 
-      const maxScroll = Math.max(0, audioBuffer.duration - (audioBuffer.duration / zoom));
-      scrollOffset += scrollAmount; 
-      if (scrollOffset > maxScroll) scrollOffset = maxScroll;
-      redraw = true; 
-    }
-    if (isZoomingIn) { zoom *= 1.03; redraw = true; }
-    if (isZoomingOut) { zoom /= 1.03; if (zoom < 1) zoom = 1; redraw = true; }
-    
+    if (isScrollingLeft) { scrollOffset -= 0.05 / zoom; if (scrollOffset < 0) scrollOffset = 0; redraw = true; }
+    if (isScrollingRight) { scrollOffset += 0.05 / zoom; redraw = true; }
+    if (isZoomingIn) { zoom *= 1.02; redraw = true; }
+    if (isZoomingOut) { zoom /= 1.02; if (zoom < 1) zoom = 1; redraw = true; }
     if (redraw) drawWaveform(audioBuffer);
   }
   requestAnimationFrame(animate);
@@ -180,33 +154,29 @@ animate();
 const recordBtn = document.getElementById("recordBtn");
 const stopRecordBtn = document.getElementById("stopRecordBtn");
 
-if (recordBtn) {
-  recordBtn.onclick = () => {
-    if (!audioStreamDest) return alert("Carga un audio primero.");
-    recordedChunks = [];
-    mediaRecorder = new MediaRecorder(audioStreamDest.stream);
-    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
-    mediaRecorder.onstop = () => {
-      const blob = new Blob(recordedChunks, { type: 'audio/webm' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "grabacion_pads.webm";
-      a.click();
-    };
-    mediaRecorder.start();
-    recordBtn.style.display = "none";
-    stopRecordBtn.style.display = "inline-block";
+recordBtn.onclick = () => {
+  if (!audioStreamDest) return alert("Carga un audio primero.");
+  recordedChunks = [];
+  mediaRecorder = new MediaRecorder(audioStreamDest.stream);
+  mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+  mediaRecorder.onstop = () => {
+    const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "grabacion_pads.webm";
+    a.click();
   };
-}
+  mediaRecorder.start();
+  recordBtn.style.display = "none";
+  stopRecordBtn.style.display = "inline-block";
+};
 
-if (stopRecordBtn) {
-  stopRecordBtn.onclick = () => {
-    mediaRecorder.stop();
-    recordBtn.style.display = "inline-block";
-    stopRecordBtn.style.display = "none";
-  };
-}
+stopRecordBtn.onclick = () => {
+  mediaRecorder.stop();
+  recordBtn.style.display = "inline-block";
+  stopRecordBtn.style.display = "none";
+};
 
 /* ---------- WAVEFORM ---------- */
 function drawWaveform(buffer) {
@@ -231,7 +201,6 @@ function drawWaveform(buffer) {
       if (datum > max) max = datum;
     }
     ctx2d.strokeStyle = `hsl(${(i / rect.width) * 360}, 80%, 60%)`;
-    ctx2d.lineWidth = 1;
     ctx2d.beginPath();
     ctx2d.moveTo(i, amp * (1 - min) + (rect.height - 2 * amp) / 2);
     ctx2d.lineTo(i, amp * (1 - max) + (rect.height - 2 * amp) / 2);
@@ -240,14 +209,8 @@ function drawWaveform(buffer) {
 
   const selStartX = ((selectionStart - scrollOffset) / visibleDuration) * rect.width;
   const selEndX = ((selectionStart + selectionDuration - scrollOffset) / visibleDuration) * rect.width;
-  
-  if (selEndX > 0 && selStartX < rect.width) {
-    ctx2d.fillStyle = "rgba(255, 47, 146, 0.3)";
-    ctx2d.fillRect(Math.max(0, selStartX), 0, Math.min(rect.width, selEndX) - Math.max(0, selStartX), rect.height);
-    ctx2d.strokeStyle = "#ff2f92";
-    ctx2d.lineWidth = 2;
-    ctx2d.strokeRect(Math.max(0, selStartX), 0, Math.min(rect.width, selEndX) - Math.max(0, selStartX), rect.height);
-  }
+  ctx2d.fillStyle = "rgba(255, 47, 146, 0.3)";
+  ctx2d.fillRect(selStartX, 0, selEndX - selStartX, rect.height);
 }
 
 canvas.addEventListener("click", e => {
@@ -287,9 +250,7 @@ downloadBtn.addEventListener("click", async () => {
 
 /* Análisis */
 function displayAudioInfo(bpm, keys) {
-  if (infoContainer) {
-    infoContainer.innerHTML = `<span>Tempo: ${bpm.toFixed(0)} BPM</span> | <span>Tonalidad: ${keys[0].key}</span>`;
-  }
+  infoContainer.innerHTML = `<span>Tempo: ${bpm.toFixed(0)} BPM</span> | <span>Tonalidad: ${keys[0].key}</span>`;
 }
 function estimateBPM(buffer) { return 120; }
 function detectKey(buffer) {
@@ -319,4 +280,5 @@ function bufferToWav(buffer) {
   }
   return view.buffer;
 }
+
 
