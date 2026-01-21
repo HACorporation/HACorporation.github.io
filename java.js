@@ -27,8 +27,8 @@ const infoContainer = document.querySelector(".audio-info");
 /* ---------- VARIABLES DE GRABACIÓN ---------- */
 let mediaRecorder;
 let recordedChunks = [];
-let audioStreamDest; // Nodo donde se mezcla el audio para grabar
-const padSources = [null, null, null, null]; // Guardamos las conexiones de los pads
+let audioStreamDest; 
+const padSources = [null, null, null, null]; 
 
 /* ---------- RESIZE CANVAS ---------- */
 function resizeCanvas() {
@@ -88,19 +88,15 @@ document.querySelectorAll(".pad-load input").forEach(input => {
     const pad = e.target.closest(".pad");
 
     if (file && ctx) {
-      // 1. Limpiar rastro del audio anterior
       if (padAudios[idx].src) URL.revokeObjectURL(padAudios[idx].src);
-      
-      // 2. Cargar nuevo track
       padAudios[idx].src = URL.createObjectURL(file);
       padAudios[idx].load();
       pad.classList.add("loaded");
 
-      // 3. Conectar al sistema de grabación (solo si no estaba conectado)
       if (!padSources[idx]) {
         padSources[idx] = ctx.createMediaElementSource(padAudios[idx]);
-        padSources[idx].connect(ctx.destination); // Para escucharlo
-        padSources[idx].connect(audioStreamDest); // Para grabarlo
+        padSources[idx].connect(ctx.destination); 
+        padSources[idx].connect(audioStreamDest); 
       }
     }
   });
@@ -112,8 +108,10 @@ function playPad(i) {
   a.currentTime = 0;
   a.play();
   const btn = document.querySelector(`.pad-play[data-play="${i}"]`);
-  btn.classList.add("playing");
-  a.onended = () => btn.classList.remove("playing");
+  if(btn) {
+    btn.classList.add("playing");
+    a.onended = () => btn.classList.remove("playing");
+  }
 }
 
 document.addEventListener("keydown", e => {
@@ -121,18 +119,46 @@ document.addEventListener("keydown", e => {
   if (idx !== -1) playPad(idx);
 });
 
+/* ---------- ZOOM Y SCROLL (ARREGLADO) ---------- */
+const btnZoomIn = document.getElementById("zoomIn");
+const btnZoomOut = document.getElementById("zoomOut");
+const btnLeft = document.getElementById("scrollLeft");
+const btnRight = document.getElementById("scrollRight");
+
+btnZoomIn.addEventListener("mousedown", () => isZoomingIn = true);
+btnZoomOut.addEventListener("mousedown", () => isZoomingOut = true);
+btnLeft.addEventListener("mousedown", () => isScrollingLeft = true);
+btnRight.addEventListener("mousedown", () => isScrollingRight = true);
+
+window.addEventListener("mouseup", () => {
+  isZoomingIn = false;
+  isZoomingOut = false;
+  isScrollingLeft = false;
+  isScrollingRight = false;
+});
+
+function animate() {
+  if (audioBuffer) {
+    let redraw = false;
+    if (isScrollingLeft) { scrollOffset -= 0.05 / zoom; if (scrollOffset < 0) scrollOffset = 0; redraw = true; }
+    if (isScrollingRight) { scrollOffset += 0.05 / zoom; redraw = true; }
+    if (isZoomingIn) { zoom *= 1.02; redraw = true; }
+    if (isZoomingOut) { zoom /= 1.02; if (zoom < 1) zoom = 1; redraw = true; }
+    if (redraw) drawWaveform(audioBuffer);
+  }
+  requestAnimationFrame(animate);
+}
+animate();
+
 /* ---------- SISTEMA DE GRABACIÓN ---------- */
 const recordBtn = document.getElementById("recordBtn");
 const stopRecordBtn = document.getElementById("stopRecordBtn");
 
 recordBtn.onclick = () => {
-  if (!audioStreamDest) return alert("Carga un audio primero para activar el sistema.");
-  
+  if (!audioStreamDest) return alert("Carga un audio primero.");
   recordedChunks = [];
   mediaRecorder = new MediaRecorder(audioStreamDest.stream);
-
   mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
-  
   mediaRecorder.onstop = () => {
     const blob = new Blob(recordedChunks, { type: 'audio/webm' });
     const url = URL.createObjectURL(blob);
@@ -141,7 +167,6 @@ recordBtn.onclick = () => {
     a.download = "grabacion_pads.webm";
     a.click();
   };
-
   mediaRecorder.start();
   recordBtn.style.display = "none";
   stopRecordBtn.style.display = "inline-block";
@@ -153,8 +178,7 @@ stopRecordBtn.onclick = () => {
   stopRecordBtn.style.display = "none";
 };
 
-/* ---------- DIBUJO Y ANÁLISIS (TUS FUNCIONES) ---------- */
-
+/* ---------- WAVEFORM ---------- */
 function drawWaveform(buffer) {
   const rect = canvas.getBoundingClientRect();
   const data = buffer.getChannelData(0);
@@ -189,7 +213,17 @@ function drawWaveform(buffer) {
   ctx2d.fillRect(selStartX, 0, selEndX - selStartX, rect.height);
 }
 
-/* Reproducción de selección principal */
+canvas.addEventListener("click", e => {
+  if (!audioBuffer) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const visibleDuration = audioBuffer.duration / zoom;
+  selectionStart = scrollOffset + (x / rect.width) * visibleDuration;
+  playPosition = selectionStart;
+  drawWaveform(audioBuffer);
+});
+
+/* Reproducción y Descarga de Clips */
 playBtn.addEventListener("click", () => {
   if (!audioBuffer) return;
   audio.currentTime = selectionStart;
@@ -197,7 +231,6 @@ playBtn.addEventListener("click", () => {
   setTimeout(() => audio.pause(), selectionDuration * 1000);
 });
 
-/* Descarga de clip individual */
 downloadBtn.addEventListener("click", async () => {
   if (!audioBuffer) return;
   const rate = audioBuffer.sampleRate;
@@ -215,21 +248,7 @@ downloadBtn.addEventListener("click", async () => {
   a.click();
 });
 
-/* Zoom y Animación */
-function animate() {
-  if (audioBuffer) {
-    let redraw = false;
-    if (isScrollingLeft) { scrollOffset -= 0.1 / zoom; if (scrollOffset < 0) scrollOffset = 0; redraw = true; }
-    if (isScrollingRight) { scrollOffset += 0.1 / zoom; redraw = true; }
-    if (isZoomingIn) { zoom *= 1.02; redraw = true; }
-    if (isZoomingOut) { zoom /= 1.02; if (zoom < 1) zoom = 1; redraw = true; }
-    if (redraw) drawWaveform(audioBuffer);
-  }
-  requestAnimationFrame(animate);
-}
-animate();
-
-/* Funciones de análisis */
+/* Análisis */
 function displayAudioInfo(bpm, keys) {
   infoContainer.innerHTML = `<span>Tempo: ${bpm.toFixed(0)} BPM</span> | <span>Tonalidad: ${keys[0].key}</span>`;
 }
