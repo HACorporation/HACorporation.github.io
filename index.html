@@ -4,97 +4,90 @@
   <meta charset="UTF-8">
   <title>SI(A)MPLE</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles.css"> 
   <script src="https://kit.fontawesome.com/bd344212b0.js" crossorigin="anonymous"></script> 
 </head>
 
 <body>
-<div id="main-content" style="display: none;">
+  <div id="main-content" style="display: none;">
 
-  <h1 class="title">SI(A)MPLE</h1>
+    <h1 class="title">SI(A)MPLE</h1>
 
-  <!-- ANALIZADOR GENERAL -->
-  <div class="analyzer">
+    <div class="analyzer">
+      <div class="top-controls">
+        <label class="file-btn">
+          Cargar audio
+          <input type="file" id="audioFile" accept="audio/*">
+        </label>
+        <div class="audio-info"></div>
+      </div>
 
-    <div class="top-controls">
-      <label class="file-btn">
-        Cargar audio
-        <input type="file" id="audioFile" accept="audio/*">
-      </label>
+      <div class="timeline">
+        <canvas id="waveform" width="820" height="120"></canvas>
+        <div class="waveform-controls">
+          <button id="zoomOut">➖</button>
+          <button id="zoomIn">➕</button>
+          <button id="scrollLeft">👈</button>
+          <button id="scrollRight">👉</button>
+        </div>
+      </div>
 
-      <div class="audio-info">
-        
+      <div class="duration-control">
+        <span>Duración</span>
+        <input type="range" id="duration" min="0.05" max="6" step="0.01" value="2">
+        <div class="duration-value"><span id="durationValue">2.00</span> s</div>
+      </div>
 
+      <div class="main-buttons">
+        <button id="playSelection">▶ Reproducir selección</button>
+        <button id="downloadSample">⬇ Descargar</button>
       </div>
     </div>
 
-    <div class="timeline">
-      <canvas id="waveform" width="820" height="120"></canvas>
+    <div class="pads">
+      <div class="pad">
+        <div class="pad-title">PAD A</div>
+        <label class="pad-load">
+          Cargar
+          <input type="file" data-pad="0" accept="audio/*">
+        </label>
+        <button data-play="0" class="pad-play">▶</button>
+      </div>
 
-      <!-- CONTROLES DE ZOOM Y SCROLL -->
-      <div class="waveform-controls">
-        <button id="zoomOut">➖</button>
-        <button id="zoomIn">➕</button>
-        <button id="scrollLeft">👈</button>
-        <button id="scrollRight">👉</button>
+      <div class="pad">
+        <div class="pad-title">PAD S</div>
+        <label class="pad-load">
+          Cargar
+          <input type="file" data-pad="1" accept="audio/*">
+        </label>
+        <button data-play="1" class="pad-play">▶</button>
+      </div>
+
+      <div class="pad">
+        <div class="pad-title">PAD D</div>
+        <label class="pad-load">
+          Cargar
+          <input type="file" data-pad="2" accept="audio/*">
+        </label>
+        <button data-play="2" class="pad-play">▶</button>
+      </div>
+
+      <div class="pad">
+        <div class="pad-title">PAD F</div>
+        <label class="pad-load">
+          Cargar
+          <input type="file" data-pad="3" accept="audio/*">
+        </label>
+        <button data-play="3" class="pad-play">▶</button>
       </div>
     </div>
 
-    <div class="duration-control">
-      <span>Duración</span>
-      <input type="range" id="duration" min="0.05" max="6" step="0.01" value="2">
-      <div class="duration-value"><span id="durationValue">2.00</span> s</div>
-    </div>
-
-    <div class="main-buttons">
-      <button id="playSelection">▶ Reproducir selección</button>
-      <button id="downloadSample">⬇ Descargar</button>
-    </div>
-  </div>
-
-  <!-- PADS -->
-  <div class="pads">
-
-    <div class="pad">
-      <div class="pad-title">PAD A</div>
-      <label class="pad-load">
-        Cargar
-        <input type="file" data-pad="0" accept="audio/*">
-      </label>
-      <button data-play="0" class="pad-play">▶</button>
-    </div>
-
-    <div class="pad">
-      <div class="pad-title">PAD S</div>
-      <label class="pad-load">
-        Cargar
-        <input type="file" data-pad="1" accept="audio/*">
-      </label>
-      <button data-play="1" class="pad-play">▶</button>
-    </div>
-
-    <div class="pad">
-      <div class="pad-title">PAD D</div>
-      <label class="pad-load">
-        Cargar
-        <input type="file" data-pad="2" accept="audio/*">
-      </label>
-      <button data-play="2" class="pad-play">▶</button>
-    </div>
-
-    <div class="pad">
-      <div class="pad-title">PAD F</div>
-      <label class="pad-load">
-        Cargar
-        <input type="file" data-pad="3" accept="audio/*">
-      </label>
-      <button data-play="3" class="pad-play">▶</button>
-    </div>
+    <button id="logout" style="margin-top: 20px; background: none; border: 1px solid white; color: white; cursor: pointer; padding: 5px 10px; border-radius: 5px;">Cerrar Sesión</button>
 
   </div>
 
-</div>
-<script type="module" src="./auth-guard.js"></script>
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="auth-guard.js"></script>
+  <script src="java.js"></script>
 </body>
 </html>
-
