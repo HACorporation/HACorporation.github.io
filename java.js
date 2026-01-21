@@ -35,21 +35,25 @@ document.querySelector(".analyzer").appendChild(infoContainer);
 
 /* ---------- RESIZE CANVAS ---------- */
 function resizeCanvas() {
-  const rect = canvas.getBoundingClientRect();
+  // Usamos clientWidth que es más confiable para elementos ocultos que acaban de aparecer
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+  
+  if (width === 0) return; // Si sigue en 0, no calculamos nada aún
+
   const dpr = window.devicePixelRatio || 1;
 
-  canvas.width = rect.width * dpr;
-  canvas.height = rect.height * dpr;
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
 
   ctx2d.setTransform(dpr, 0, 0, dpr, 0, 0);
+  
+  // Si ya había un audio cargado, lo redibuja automáticamente
+  if (audioBuffer) drawWaveform(audioBuffer);
 }
 
-window.addEventListener("resize", () => {
-  resizeCanvas();
-  if (audioBuffer) drawWaveform(audioBuffer);
-});
-
-resizeCanvas();
+// ESTA LÍNEA ES VITAL: Permite que auth-guard.js llame a esta función
+window.triggerResize = resizeCanvas;
 
 /* ---------- DURACIÓN ---------- */
 durationInput.addEventListener("input", () => {
@@ -458,4 +462,5 @@ function detectKey(buffer) {
   result.forEach(r => r.prob = (r.prob / total) * 100);
 
   return result;
+
 }
