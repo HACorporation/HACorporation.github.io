@@ -4,7 +4,10 @@ import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/
 onAuthStateChanged(auth, (user) => {
   const mainContent = document.getElementById("main-content");
   if (user) {
-    if (mainContent) mainContent.style.display = "block";
+    if (mainContent) {
+      mainContent.style.display = "block";
+      window.dispatchEvent(new Event('resize'));
+    }
   } else {
     window.location.href = "login.html";
   }
@@ -19,4 +22,5 @@ if (logoutBtn) {
         });
     };
 }
+
 
