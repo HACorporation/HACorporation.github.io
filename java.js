@@ -13,45 +13,35 @@ let playPosition = 0;
 let zoom = 1;
 let scrollOffset = 0;
 
-let isScrollingLeft = false;
-let isScrollingRight = false;
-let isZoomingIn = false;
-let isZoomingOut = false;
-
-const scrollSpeed = 60;
-const zoomSpeed = 0.02;
+let isScrollingLeft = false, isScrollingRight = false;
+let isZoomingIn = false, isZoomingOut = false;
 
 const canvas = document.getElementById("waveform");
 const ctx2d = canvas.getContext("2d");
 
-// Variables para la selección
 let selectionStart = 0;
 let selectionDuration = parseFloat(durationInput.value);
 
-/* ---------- INFO DE AUDIO ---------- */
-// Usamos el div con clase .audio-info que ya tienes en tu HTML
 const infoContainer = document.querySelector(".audio-info");
+
+/* ---------- VARIABLES DE GRABACIÓN ---------- */
+let mediaRecorder;
+let recordedChunks = [];
+let audioStreamDest; // Nodo donde se mezcla el audio para grabar
+const padSources = [null, null, null, null]; // Guardamos las conexiones de los pads
 
 /* ---------- RESIZE CANVAS ---------- */
 function resizeCanvas() {
   const rect = canvas.getBoundingClientRect();
   const dpr = window.devicePixelRatio || 1;
-
-  // Si el contenedor está oculto (por Firebase), el ancho será 0.
   const width = rect.width || canvas.clientWidth;
   const height = rect.height || canvas.clientHeight;
-
   if (width === 0) return;
-
   canvas.width = width * dpr;
   canvas.height = height * dpr;
-
   ctx2d.setTransform(dpr, 0, 0, dpr, 0, 0);
-  
   if (audioBuffer) drawWaveform(audioBuffer);
 }
-
-// Permitimos que auth-guard.js llame a esta función
 window.triggerResize = resizeCanvas;
 
 /* ---------- DURACIÓN ---------- */
@@ -62,9 +52,12 @@ durationInput.addEventListener("input", () => {
   if (audioBuffer) drawWaveform(audioBuffer);
 });
 
-/* ---------- CARGAR AUDIO ---------- */
+/* ---------- CARGAR AUDIO PRINCIPAL ---------- */
 fileInput.addEventListener("change", async () => {
-  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+  if (!ctx) {
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    audioStreamDest = ctx.createMediaStreamDestination();
+  }
   if (ctx.state === "suspended") await ctx.resume();
 
   const file = fileInput.files[0];
@@ -73,66 +66,94 @@ fileInput.addEventListener("change", async () => {
   try {
     const arrayBuffer = await file.arrayBuffer();
     audioBuffer = await ctx.decodeAudioData(arrayBuffer);
-
     audio.src = URL.createObjectURL(file);
     audio.load();
-
-    // Reset de vista
-    playPosition = 0;
-    selectionStart = 0;
-    scrollOffset = 0;
-    zoom = 1;
-
+    scrollOffset = 0; zoom = 1;
     resizeCanvas(); 
-
-    // Actualizar Info (Tempo y Tonalidad)
-    const bpm = estimateBPM(audioBuffer);
-    const keys = detectKey(audioBuffer); // Devuelve array de objetos
-    
-    displayAudioInfo(bpm, keys);
+    displayAudioInfo(estimateBPM(audioBuffer), detectKey(audioBuffer));
     drawWaveform(audioBuffer);
-
   } catch (err) {
-    console.error("Error al cargar audio:", err);
-    alert("Hubo un error al procesar el audio.");
+    alert("Error al cargar audio.");
   }
 });
 
-/* ---------- REPRODUCIR SELECCIÓN ---------- */
-playBtn.addEventListener("click", () => {
-  if (!audioBuffer) return;
-  const start = playPosition;
-  const length = parseFloat(durationInput.value);
-  audio.currentTime = start;
-  audio.play();
-  setTimeout(() => audio.pause(), length * 1000);
+/* ---------- LÓGICA DE PADS (RE-CARGABLES) ---------- */
+const padAudios = [new Audio(), new Audio(), new Audio(), new Audio()];
+const padKeys = ["a", "s", "d", "f"];
+
+document.querySelectorAll(".pad-load input").forEach(input => {
+  input.addEventListener("change", e => {
+    const idx = e.target.dataset.pad;
+    const file = e.target.files[0];
+    const pad = e.target.closest(".pad");
+
+    if (file && ctx) {
+      // 1. Limpiar rastro del audio anterior
+      if (padAudios[idx].src) URL.revokeObjectURL(padAudios[idx].src);
+      
+      // 2. Cargar nuevo track
+      padAudios[idx].src = URL.createObjectURL(file);
+      padAudios[idx].load();
+      pad.classList.add("loaded");
+
+      // 3. Conectar al sistema de grabación (solo si no estaba conectado)
+      if (!padSources[idx]) {
+        padSources[idx] = ctx.createMediaElementSource(padAudios[idx]);
+        padSources[idx].connect(ctx.destination); // Para escucharlo
+        padSources[idx].connect(audioStreamDest); // Para grabarlo
+      }
+    }
+  });
 });
 
-/* ---------- DESCARGAR SAMPLE ---------- */
-downloadBtn.addEventListener("click", async () => {
-  if (!audioBuffer) return;
-  const start = playPosition;
-  const length = parseFloat(durationInput.value);
-  const rate = audioBuffer.sampleRate;
-  const frames = length * rate;
+function playPad(i) {
+  const a = padAudios[i];
+  if (!a.src) return;
+  a.currentTime = 0;
+  a.play();
+  const btn = document.querySelector(`.pad-play[data-play="${i}"]`);
+  btn.classList.add("playing");
+  a.onended = () => btn.classList.remove("playing");
+}
 
-  const offline = new OfflineAudioContext(audioBuffer.numberOfChannels, frames, rate);
-  const source = offline.createBufferSource();
-  source.buffer = audioBuffer;
-  source.connect(offline.destination);
-  source.start(0, start, length);
-
-  const rendered = await offline.startRendering();
-  const wav = bufferToWav(rendered);
-  const blob = new Blob([wav], { type: "audio/wav" });
-
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "sample.wav";
-  a.click();
+document.addEventListener("keydown", e => {
+  const idx = padKeys.indexOf(e.key.toLowerCase());
+  if (idx !== -1) playPad(idx);
 });
 
-/* ---------- WAVEFORM ---------- */
+/* ---------- SISTEMA DE GRABACIÓN ---------- */
+const recordBtn = document.getElementById("recordBtn");
+const stopRecordBtn = document.getElementById("stopRecordBtn");
+
+recordBtn.onclick = () => {
+  if (!audioStreamDest) return alert("Carga un audio primero para activar el sistema.");
+  
+  recordedChunks = [];
+  mediaRecorder = new MediaRecorder(audioStreamDest.stream);
+
+  mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+  
+  mediaRecorder.onstop = () => {
+    const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "grabacion_pads.webm";
+    a.click();
+  };
+
+  mediaRecorder.start();
+  recordBtn.style.display = "none";
+  stopRecordBtn.style.display = "inline-block";
+};
+
+stopRecordBtn.onclick = () => {
+  mediaRecorder.stop();
+  recordBtn.style.display = "inline-block";
+  stopRecordBtn.style.display = "none";
+};
+
+/* ---------- DIBUJO Y ANÁLISIS (TUS FUNCIONES) ---------- */
 
 function drawWaveform(buffer) {
   const rect = canvas.getBoundingClientRect();
@@ -141,14 +162,11 @@ function drawWaveform(buffer) {
   const startTime = scrollOffset;
   const startSample = Math.floor(startTime * buffer.sampleRate);
   const endSample = Math.min(data.length, Math.floor((startTime + visibleDuration) * buffer.sampleRate));
-
-  const segmentLength = endSample - startSample;
-  const step = Math.ceil(segmentLength / rect.width);
+  const step = Math.ceil((endSample - startSample) / rect.width);
   const amp = rect.height / 2 * 0.8;
 
   ctx2d.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Dibujar onda
   for (let i = 0; i < rect.width; i++) {
     let min = 1, max = -1;
     for (let j = 0; j < step; j++) {
@@ -158,81 +176,46 @@ function drawWaveform(buffer) {
       if (datum < min) min = datum;
       if (datum > max) max = datum;
     }
-    const hue = (i / rect.width) * 360;
-    ctx2d.strokeStyle = `hsl(${hue}, 80%, 60%)`;
+    ctx2d.strokeStyle = `hsl(${(i / rect.width) * 360}, 80%, 60%)`;
     ctx2d.beginPath();
     ctx2d.moveTo(i, amp * (1 - min) + (rect.height - 2 * amp) / 2);
     ctx2d.lineTo(i, amp * (1 - max) + (rect.height - 2 * amp) / 2);
     ctx2d.stroke();
   }
 
-  // Dibujar selección
   const selStartX = ((selectionStart - scrollOffset) / visibleDuration) * rect.width;
   const selEndX = ((selectionStart + selectionDuration - scrollOffset) / visibleDuration) * rect.width;
   ctx2d.fillStyle = "rgba(255, 47, 146, 0.3)";
   ctx2d.fillRect(selStartX, 0, selEndX - selStartX, rect.height);
-  ctx2d.strokeStyle = "#ff2f92";
-  ctx2d.lineWidth = 2;
-  ctx2d.strokeRect(selStartX, 0, selEndX - selStartX, rect.height);
 }
 
-canvas.addEventListener("click", e => {
+/* Reproducción de selección principal */
+playBtn.addEventListener("click", () => {
   if (!audioBuffer) return;
-  const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const visibleDuration = audioBuffer.duration / zoom;
-  selectionStart = scrollOffset + (x / rect.width) * visibleDuration;
-  playPosition = selectionStart;
-  drawWaveform(audioBuffer);
+  audio.currentTime = selectionStart;
+  audio.play();
+  setTimeout(() => audio.pause(), selectionDuration * 1000);
 });
 
-/* ---------- PADS ---------- */
-const padAudios = [new Audio(), new Audio(), new Audio(), new Audio()];
-const padKeys = ["a", "s", "d", "f"];
-
-document.querySelectorAll(".pad-load input").forEach(input => {
-  input.addEventListener("change", e => {
-    const idx = e.target.dataset.pad;
-    const pad = e.target.closest(".pad");
-    padAudios[idx].src = URL.createObjectURL(e.target.files[0]);
-    padAudios[idx].load();
-    pad.classList.add("loaded");
-  });
+/* Descarga de clip individual */
+downloadBtn.addEventListener("click", async () => {
+  if (!audioBuffer) return;
+  const rate = audioBuffer.sampleRate;
+  const frames = selectionDuration * rate;
+  const offline = new OfflineAudioContext(audioBuffer.numberOfChannels, frames, rate);
+  const source = offline.createBufferSource();
+  source.buffer = audioBuffer;
+  source.connect(offline.destination);
+  source.start(0, selectionStart, selectionDuration);
+  const rendered = await offline.startRendering();
+  const wav = bufferToWav(rendered);
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([wav], { type: "audio/wav" }));
+  a.download = "sample.wav";
+  a.click();
 });
 
-document.querySelectorAll(".pad-play").forEach(btn => {
-  btn.addEventListener("click", () => playPad(btn.dataset.play));
-});
-
-document.addEventListener("keydown", e => {
-  const idx = padKeys.indexOf(e.key.toLowerCase());
-  if (idx !== -1) playPad(idx);
-});
-
-function playPad(i) {
-  const a = padAudios[i];
-  const btn = document.querySelector(`.pad-play[data-play="${i}"]`);
-  if (!a.src) return;
-  a.currentTime = 0;
-  a.play();
-  btn.classList.add("playing");
-  a.onended = () => btn.classList.remove("playing");
-}
-
-/* ---------- ZOOM Y SCROLL ---------- */
-const btnZoomIn = document.getElementById("zoomIn");
-const btnZoomOut = document.getElementById("zoomOut");
-const btnLeft = document.getElementById("scrollLeft");
-const btnRight = document.getElementById("scrollRight");
-
-btnZoomIn.addEventListener("mousedown", () => isZoomingIn = true);
-btnZoomOut.addEventListener("mousedown", () => isZoomingOut = true);
-btnLeft.addEventListener("mousedown", () => isScrollingLeft = true);
-btnRight.addEventListener("mousedown", () => isScrollingRight = true);
-window.addEventListener("mouseup", () => {
-  isZoomingIn = isZoomingOut = isScrollingLeft = isScrollingRight = false;
-});
-
+/* Zoom y Animación */
 function animate() {
   if (audioBuffer) {
     let redraw = false;
@@ -246,28 +229,14 @@ function animate() {
 }
 animate();
 
-/* ---------- ANÁLISIS (BPM Y KEY) ---------- */
+/* Funciones de análisis */
 function displayAudioInfo(bpm, keys) {
-  // keys[0] es la tonalidad con más probabilidad
   infoContainer.innerHTML = `<span>Tempo: ${bpm.toFixed(0)} BPM</span> | <span>Tonalidad: ${keys[0].key}</span>`;
 }
-
-function estimateBPM(buffer) {
-  const data = buffer.getChannelData(0);
-  const sampleRate = buffer.sampleRate;
-  const windowSize = 1024;
-  const energy = [];
-  for (let i = 0; i < data.length; i += windowSize) {
-    let sum = 0;
-    for (let j = 0; j < windowSize && i + j < data.length; j++) sum += data[i + j] * data[i + j];
-    energy.push(sum);
-  }
-  return 120; // Retornamos un valor base o lógica de detección
-}
-
+function estimateBPM(buffer) { return 120; }
 function detectKey(buffer) {
   const keys = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-  return [{ key: keys[Math.floor(Math.random() * keys.length)] + " Major", prob: 100 }];
+  return [{ key: keys[Math.floor(Math.random() * keys.length)] + " Major" }];
 }
 
 function bufferToWav(buffer) {
@@ -275,18 +244,15 @@ function bufferToWav(buffer) {
   const view = new DataView(new ArrayBuffer(length));
   let offset = 0;
   const write = s => { for (let i = 0; i < s.length; i++) view.setUint8(offset++, s.charCodeAt(i)); };
-  write("RIFF");
-  view.setUint32(offset, length - 8, true); offset += 4;
-  write("WAVEfmt ");
-  view.setUint32(offset, 16, true); offset += 4;
+  write("RIFF"); view.setUint32(offset, length - 8, true); offset += 4;
+  write("WAVEfmt "); view.setUint32(offset, 16, true); offset += 4;
   view.setUint16(offset, 1, true); offset += 2;
   view.setUint16(offset, buffer.numberOfChannels, true); offset += 2;
   view.setUint32(offset, buffer.sampleRate, true); offset += 4;
   view.setUint32(offset, buffer.sampleRate * buffer.numberOfChannels * 2, true); offset += 4;
   view.setUint16(offset, buffer.numberOfChannels * 2, true); offset += 2;
   view.setUint16(offset, 16, true); offset += 2;
-  write("data");
-  view.setUint32(offset, buffer.length * buffer.numberOfChannels * 2, true); offset += 4;
+  write("data"); view.setUint32(offset, buffer.length * buffer.numberOfChannels * 2, true); offset += 4;
   for (let i = 0; i < buffer.length; i++) {
     for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
       let sample = Math.max(-1, Math.min(1, buffer.getChannelData(ch)[i]));
