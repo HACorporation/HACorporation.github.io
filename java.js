@@ -8,6 +8,7 @@ const durationValue = document.getElementById("durationValue");
 let audio = new Audio();
 let audioBuffer = null;
 let ctx = null;
+let mainAudioSource = null; // Guardamos la fuente para poder desconectarla
 
 let playPosition = 0;
 let zoom = 1;
@@ -20,7 +21,7 @@ const canvas = document.getElementById("waveform");
 const ctx2d = canvas.getContext("2d");
 
 let selectionStart = 0;
-let selectionDuration = parseFloat(durationInput.value);
+let selectionDuration = parseFloat(durationInput.value || 1.0);
 
 const infoContainer = document.querySelector(".audio-info");
 
@@ -43,6 +44,7 @@ function resizeCanvas() {
   if (audioBuffer) drawWaveform(audioBuffer);
 }
 window.triggerResize = resizeCanvas;
+window.addEventListener('resize', resizeCanvas);
 
 /* ---------- DURACIÓN ---------- */
 durationInput.addEventListener("input", () => {
@@ -52,7 +54,7 @@ durationInput.addEventListener("input", () => {
   if (audioBuffer) drawWaveform(audioBuffer);
 });
 
-/* ---------- CARGAR AUDIO PRINCIPAL ---------- */
+/* ---------- CARGAR AUDIO PRINCIPAL (CORREGIDO) ---------- */
 fileInput.addEventListener("change", async () => {
   if (!ctx) {
     ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -64,47 +66,72 @@ fileInput.addEventListener("change", async () => {
   if (!file) return;
 
   try {
+    // Limpiar audio anterior
+    audio.pause();
+    if (audio.src) URL.revokeObjectURL(audio.src);
+
     const arrayBuffer = await file.arrayBuffer();
     audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+    
+    // Crear nueva URL y cargar
     audio.src = URL.createObjectURL(file);
     audio.load();
-    scrollOffset = 0; zoom = 1;
+
+    // RECONEXIÓN: Crucial para que suene al cambiar de archivo
+    if (mainAudioSource) mainAudioSource.disconnect();
+    mainAudioSource = ctx.createMediaElementSource(audio);
+    mainAudioSource.connect(ctx.destination);
+    mainAudioSource.connect(audioStreamDest);
+
+    // Reset de vista
+    scrollOffset = 0; 
+    zoom = 1;
+    selectionStart = 0;
+
     resizeCanvas(); 
     displayAudioInfo(estimateBPM(audioBuffer), detectKey(audioBuffer));
     drawWaveform(audioBuffer);
   } catch (err) {
+    console.error(err);
     alert("Error al cargar audio.");
   }
 });
 
-/* ---------- LÓGICA DE PADS (RE-CARGABLES) ---------- */
+/* ---------- LÓGICA DE PADS (RE-CARGA LIMPIA) ---------- */
 const padAudios = [new Audio(), new Audio(), new Audio(), new Audio()];
 const padKeys = ["a", "s", "d", "f"];
 
 document.querySelectorAll(".pad-load input").forEach(input => {
   input.addEventListener("change", e => {
-    const idx = e.target.dataset.pad;
+    const idx = parseInt(e.target.dataset.pad);
     const file = e.target.files[0];
     const pad = e.target.closest(".pad");
 
     if (file && ctx) {
-      if (padAudios[idx].src) URL.revokeObjectURL(padAudios[idx].src);
+      // Limpiar memoria y conexiones anteriores del pad
+      if (padAudios[idx].src) {
+        padAudios[idx].pause();
+        URL.revokeObjectURL(padAudios[idx].src);
+      }
+      if (padSources[idx]) {
+        padSources[idx].disconnect();
+      }
+
       padAudios[idx].src = URL.createObjectURL(file);
       padAudios[idx].load();
       pad.classList.add("loaded");
 
-      if (!padSources[idx]) {
-        padSources[idx] = ctx.createMediaElementSource(padAudios[idx]);
-        padSources[idx].connect(ctx.destination); 
-        padSources[idx].connect(audioStreamDest); 
-      }
+      // Crear nueva conexión
+      padSources[idx] = ctx.createMediaElementSource(padAudios[idx]);
+      padSources[idx].connect(ctx.destination); 
+      padSources[idx].connect(audioStreamDest); 
     }
   });
 });
 
 function playPad(i) {
   const a = padAudios[i];
-  if (!a.src) return;
+  if (!a || !a.src) return;
   a.currentTime = 0;
   a.play();
   const btn = document.querySelector(`.pad-play[data-play="${i}"]`);
@@ -119,31 +146,34 @@ document.addEventListener("keydown", e => {
   if (idx !== -1) playPad(idx);
 });
 
-/* ---------- ZOOM Y SCROLL (ARREGLADO) ---------- */
+/* ---------- ANIMACIÓN DE ZOOM Y SCROLL ---------- */
 const btnZoomIn = document.getElementById("zoomIn");
 const btnZoomOut = document.getElementById("zoomOut");
 const btnLeft = document.getElementById("scrollLeft");
 const btnRight = document.getElementById("scrollRight");
 
-btnZoomIn.addEventListener("mousedown", () => isZoomingIn = true);
-btnZoomOut.addEventListener("mousedown", () => isZoomingOut = true);
-btnLeft.addEventListener("mousedown", () => isScrollingLeft = true);
-btnRight.addEventListener("mousedown", () => isScrollingRight = true);
+if(btnZoomIn) btnZoomIn.onmousedown = () => isZoomingIn = true;
+if(btnZoomOut) btnZoomOut.onmousedown = () => isZoomingOut = true;
+if(btnLeft) btnLeft.onmousedown = () => isScrollingLeft = true;
+if(btnRight) btnRight.onmousedown = () => isScrollingRight = true;
 
-window.addEventListener("mouseup", () => {
-  isZoomingIn = false;
-  isZoomingOut = false;
-  isScrollingLeft = false;
-  isScrollingRight = false;
-});
+window.onmouseup = () => {
+  isZoomingIn = isZoomingOut = isScrollingLeft = isScrollingRight = false;
+};
 
 function animate() {
   if (audioBuffer) {
     let redraw = false;
-    if (isScrollingLeft) { scrollOffset -= 0.05 / zoom; if (scrollOffset < 0) scrollOffset = 0; redraw = true; }
-    if (isScrollingRight) { scrollOffset += 0.05 / zoom; redraw = true; }
-    if (isZoomingIn) { zoom *= 1.02; redraw = true; }
-    if (isZoomingOut) { zoom /= 1.02; if (zoom < 1) zoom = 1; redraw = true; }
+    const step = 0.05 / zoom;
+    if (isScrollingLeft) { scrollOffset -= step; if (scrollOffset < 0) scrollOffset = 0; redraw = true; }
+    if (isScrollingRight) { 
+        const maxScroll = Math.max(0, audioBuffer.duration - (audioBuffer.duration / zoom));
+        scrollOffset += step; 
+        if (scrollOffset > maxScroll) scrollOffset = maxScroll;
+        redraw = true; 
+    }
+    if (isZoomingIn) { zoom *= 1.03; redraw = true; }
+    if (isZoomingOut) { zoom /= 1.03; if (zoom < 1) zoom = 1; redraw = true; }
     if (redraw) drawWaveform(audioBuffer);
   }
   requestAnimationFrame(animate);
@@ -154,29 +184,33 @@ animate();
 const recordBtn = document.getElementById("recordBtn");
 const stopRecordBtn = document.getElementById("stopRecordBtn");
 
-recordBtn.onclick = () => {
-  if (!audioStreamDest) return alert("Carga un audio primero.");
-  recordedChunks = [];
-  mediaRecorder = new MediaRecorder(audioStreamDest.stream);
-  mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
-  mediaRecorder.onstop = () => {
-    const blob = new Blob(recordedChunks, { type: 'audio/webm' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "grabacion_pads.webm";
-    a.click();
-  };
-  mediaRecorder.start();
-  recordBtn.style.display = "none";
-  stopRecordBtn.style.display = "inline-block";
-};
+if(recordBtn) {
+    recordBtn.onclick = () => {
+        if (!audioStreamDest) return alert("Carga un audio primero.");
+        recordedChunks = [];
+        mediaRecorder = new MediaRecorder(audioStreamDest.stream);
+        mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "grabacion_pads.webm";
+          a.click();
+        };
+        mediaRecorder.start();
+        recordBtn.style.display = "none";
+        stopRecordBtn.style.display = "inline-block";
+    };
+}
 
-stopRecordBtn.onclick = () => {
-  mediaRecorder.stop();
-  recordBtn.style.display = "inline-block";
-  stopRecordBtn.style.display = "none";
-};
+if(stopRecordBtn) {
+    stopRecordBtn.onclick = () => {
+        mediaRecorder.stop();
+        recordBtn.style.display = "inline-block";
+        stopRecordBtn.style.display = "none";
+    };
+}
 
 /* ---------- WAVEFORM ---------- */
 function drawWaveform(buffer) {
@@ -219,16 +253,16 @@ canvas.addEventListener("click", e => {
   const x = e.clientX - rect.left;
   const visibleDuration = audioBuffer.duration / zoom;
   selectionStart = scrollOffset + (x / rect.width) * visibleDuration;
-  playPosition = selectionStart;
   drawWaveform(audioBuffer);
 });
 
-/* Reproducción y Descarga de Clips */
+/* Reproducción y Descarga */
 playBtn.addEventListener("click", () => {
-  if (!audioBuffer) return;
+  if (!audioBuffer || !audio.src) return;
   audio.currentTime = selectionStart;
   audio.play();
-  setTimeout(() => audio.pause(), selectionDuration * 1000);
+  if (window.playTimeout) clearTimeout(window.playTimeout);
+  window.playTimeout = setTimeout(() => audio.pause(), selectionDuration * 1000);
 });
 
 downloadBtn.addEventListener("click", async () => {
@@ -250,7 +284,7 @@ downloadBtn.addEventListener("click", async () => {
 
 /* Análisis */
 function displayAudioInfo(bpm, keys) {
-  infoContainer.innerHTML = `<span>Tempo: ${bpm.toFixed(0)} BPM</span> | <span>Tonalidad: ${keys[0].key}</span>`;
+  if(infoContainer) infoContainer.innerHTML = `<span>Tempo: ${bpm.toFixed(0)} BPM</span> | <span>Tonalidad: ${keys[0].key}</span>`;
 }
 function estimateBPM(buffer) { return 120; }
 function detectKey(buffer) {
@@ -280,5 +314,6 @@ function bufferToWav(buffer) {
   }
   return view.buffer;
 }
+
 
 
