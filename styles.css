@@ -6,24 +6,31 @@
 body { 
   font-family: 'Orbitron', sans-serif; 
   color: #f0f0f0; 
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
-  min-height: 100vh; 
-  overflow: hidden;
+  background: #000000; /* Fondo base negro */
   background: radial-gradient(circle at 50% 20%, #ffffff10, #000000);
-  position: relative;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  width: 100%;
 }
-
+/* Aplicamos el orden al contenedor principal */
+#main-content {
+  display: flex; 
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+  min-height: 100vh;
+}
 /* -------------------- FONDO ANIMADO -------------------- */
 body::before {
   content: "";
-  position: absolute;
-  inset: 0;
+  position: fixed; /* Cambiado a fixed para que no se mueva al hacer scroll */
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background: url('https://res.cloudinary.com/dgmeodm8y/image/upload/v1768664112/fondo_ph1g09.png') center/cover no-repeat;
-  opacity: 0.05;
-  animation: lightningAnim 4s infinite linear;
-  z-index: 0;
+  opacity: 0.15; /* Subido de 0.05 a 0.15 para que sea más visible */
+  z-index: -1;
   pointer-events: none;
 }
 
@@ -349,3 +356,4 @@ button#downloadSample:hover {
 .btn-google:hover, .btn-fb:hover {
     background: #333;
 }
+
